@@ -14,13 +14,13 @@ export const GHL_WEBHOOK = import.meta.env.VITE_GHL_WEBHOOK ?? '';
 export const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD ?? 'vitallis2026';
 
 export const COMPOSICIONES: Composicion[] = [
-  { key: 'individual', label: 'Solo yo',                icon: '🧑' },
-  { key: 'ind+1',      label: 'Yo + 1 hijo',           icon: '🧑‍👦' },
-  { key: 'ind+2',      label: 'Yo + 2 hijos',          icon: '🧑‍👦‍👦' },
-  { key: 'matrimonio', label: 'Yo + cónyuge',          icon: '👫' },
-  { key: 'mat+1',      label: 'Yo + cónyuge + 1 hijo', icon: '👨‍👩‍👦' },
-  { key: 'mat+2',      label: 'Yo + cónyuge + 2 hijos',icon: '👨‍👩‍👧‍👦' },
-  { key: 'mat+3',      label: 'Yo + cónyuge + 3 hijos',icon: '👪' },
+  { key: 'individual', label: 'Individual',             icon: '🧑' },
+  { key: 'ind+1',      label: 'Titular + 1 hijo',      icon: '🧑‍👦' },
+  { key: 'ind+2',      label: 'Titular + 2 hijos',     icon: '🧑‍👦‍👦' },
+  { key: 'matrimonio', label: 'Titular + cónyuge',     icon: '👫' },
+  { key: 'mat+1',      label: 'Grupo familiar (2+1)',  icon: '👨‍👩‍👦' },
+  { key: 'mat+2',      label: 'Grupo familiar (2+2)',  icon: '👨‍👩‍👧‍👦' },
+  { key: 'mat+3',      label: 'Grupo familiar (2+3)',  icon: '👪' },
 ];
 
 export const MODS: Modalidad[] = [
