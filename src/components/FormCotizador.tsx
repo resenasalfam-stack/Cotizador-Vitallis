@@ -1,5 +1,5 @@
 import { fp } from '../utils/calculos';
-import { COMPOSICIONES, MODS, CFG } from '../data/config';
+import { COMPOSICIONES, MODS, CFG, CATEGORIAS_MONO } from '../data/config';
 
 interface Props {
   edad: string;
@@ -14,6 +14,8 @@ interface Props {
   setMod: (v: string) => void;
   salario: string;
   setSalario: (v: string) => void;
+  categoriaMono: string;
+  setCategoriaMono: (v: string) => void;
   aporte: number;
   canCot: boolean;
   onCotizar: () => void;
@@ -77,7 +79,8 @@ if (typeof document !== 'undefined' && !document.getElementById('fc-styles')) {
 
 export default function FormCotizador({
   edad, setEdad, edadConyuge, setEdadConyuge, edadesHijos, setEdadHijo,
-  comp, setComp, mod, setMod, salario, setSalario, aporte, canCot, onCotizar,
+  comp, setComp, mod, setMod, salario, setSalario, categoriaMono, setCategoriaMono,
+  aporte, canCot, onCotizar,
 }: Props) {
   const edadN = parseInt(edad) || 0;
   const salN  = parseFloat((salario || '').replace(/\./g, '')) || 0;
@@ -206,17 +209,33 @@ export default function FormCotizador({
             {/* Aporte monotributo */}
             {mod === 'monotributo' && m.key === 'monotributo' && (
               <div style={{ marginTop: 10 }} onClick={e => e.stopPropagation()}>
-                <div className="abox">
-                  <div className="at">Aporte obra social (igual para todas las cat. A–K)</div>
-                  <div className="av">
-                    {fp(aporte)}
-                    <span style={{ fontSize: 13, fontWeight: 400, color: '#4DB6A9' }}>/mes</span>
+                <label className="lbl" style={{ marginBottom: 6, display: 'block' }}>Categoría de monotributo</label>
+                <select
+                  className="inp"
+                  value={categoriaMono}
+                  onChange={e => setCategoriaMono(e.target.value)}
+                  style={{ marginBottom: 10 }}
+                >
+                  <option value="">— Seleccioná tu categoría —</option>
+                  {CATEGORIAS_MONO.map(c => (
+                    <option key={c.key} value={c.key}>
+                      {c.label} — OS: {fp(c.aporteObraSocial)}/mes
+                    </option>
+                  ))}
+                </select>
+                {categoriaMono && (
+                  <div className="abox">
+                    <div className="at">Aporte obra social — Cat. {categoriaMono}</div>
+                    <div className="av">
+                      {fp(aporte)}
+                      <span style={{ fontSize: 13, fontWeight: 400, color: '#a855f7' }}>/mes</span>
+                    </div>
+                    <div className="as">
+                      {fp(CATEGORIAS_MONO.find(c => c.key === categoriaMono)?.aporteObraSocial)}/titular
+                      {comp !== 'individual' && ' · adherentes incluidos'}
+                    </div>
                   </div>
-                  <div className="as">
-                    {fp(CFG.mono_titular)}/titular
-                    {comp !== 'individual' && ' + adherentes incluidos'}
-                  </div>
-                </div>
+                )}
               </div>
             )}
 

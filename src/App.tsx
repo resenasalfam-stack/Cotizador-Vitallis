@@ -126,8 +126,9 @@ export default function App() {
   const [edadesHijos, setEdadesHijos] = useState<string[]>(['', '', '']);
   const [comp,        setComp]        = useState('individual');
   const [mod,         setMod]         = useState('particular');
-  const [salario,     setSalario]     = useState('');
-  const [cotizado,    setCotizado]    = useState(false);
+  const [salario,       setSalario]       = useState('');
+  const [categoriaMono, setCategoriaMono] = useState('');
+  const [cotizado,      setCotizado]      = useState(false);
 
   const edadN = parseInt(edad) || 0;
   const salN  = parseFloat((salario || '').replace(/\./g, '')) || 0;
@@ -147,12 +148,14 @@ export default function App() {
   }), [edadN, edadConyuge, edadesHijos]);
 
   const aporte = useMemo(
-    () => calcularAporte(mod, salN, comp),
-    [mod, salN, comp]
+    () => calcularAporte(mod, salN, comp, categoriaMono),
+    [mod, salN, comp, categoriaMono]
   );
 
   const canCot = Boolean(
-    edad && edadN >= 1 && edadN <= 79 && !(mod === 'dependencia' && !salario)
+    edad && edadN >= 1 && edadN <= 79 &&
+    !(mod === 'dependencia' && !salario) &&
+    !(mod === 'monotributo' && !categoriaMono)
   );
 
   const resultados: ResultadoPrepaga[] = useMemo(() => {
@@ -225,6 +228,8 @@ export default function App() {
           setMod={v => { setMod(v); setCotizado(false); }}
           salario={salario}
           setSalario={v => { setSalario(v); setCotizado(false); }}
+          categoriaMono={categoriaMono}
+          setCategoriaMono={v => { setCategoriaMono(v); setCotizado(false); }}
           aporte={aporte}
           canCot={canCot}
           onCotizar={() => setCotizado(true)}

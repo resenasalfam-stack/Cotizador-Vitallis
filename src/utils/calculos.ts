@@ -1,4 +1,4 @@
-import { CFG, GHL_WEBHOOK } from '../data/config';
+import { CFG, CATEGORIAS_MONO, GHL_WEBHOOK } from '../data/config';
 import type { LeadData } from '../types';
 
 /** Formatea número como precio en pesos argentinos */
@@ -6,7 +6,7 @@ export const fp = (n: number | null | undefined): string =>
   n != null ? `$${Math.round(n).toLocaleString('es-AR')}` : '—';
 
 /** Calcula el aporte mensual según modalidad laboral */
-export function calcularAporte(mod: string, salario: number, comp: string): number {
+export function calcularAporte(mod: string, salario: number, comp: string, categoriaMono?: string): number {
   if (mod === 'particular') return 0;
 
   if (mod === 'dependencia') {
@@ -23,7 +23,9 @@ export function calcularAporte(mod: string, salario: number, comp: string): numb
       'mat+2':    3,
       'mat+3':    4,
     };
-    return CFG.mono_titular * (1 + (adherentes[comp] ?? 0));
+    const cat = CATEGORIAS_MONO.find(c => c.key === categoriaMono);
+    const aporteBase = cat ? cat.aporteObraSocial : CFG.mono_titular;
+    return aporteBase * (1 + (adherentes[comp] ?? 0));
   }
 
   return 0;

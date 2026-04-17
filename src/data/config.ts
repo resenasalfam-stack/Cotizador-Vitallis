@@ -1,11 +1,32 @@
 import type { Composicion, Modalidad } from '../types';
 
 export const CFG = {
-  mono_titular:   21988,
+  mono_titular:   21988, // fallback si no hay categoría seleccionada
   mono_adherente: 21988,
   dep_empleado:   0.03,
   dep_empleador:  0.06,
 };
+
+// Aportes obra social por categoría — vigente desde 01/02/2026 (ARCA/AFIP)
+export interface CategoriaMono {
+  key: string;
+  label: string;
+  aporteObraSocial: number;
+}
+
+export const CATEGORIAS_MONO: CategoriaMono[] = [
+  { key: 'A', label: 'Categoría A', aporteObraSocial: 15616 },
+  { key: 'B', label: 'Categoría B', aporteObraSocial: 17178 },
+  { key: 'C', label: 'Categoría C', aporteObraSocial: 18896 },
+  { key: 'D', label: 'Categoría D', aporteObraSocial: 20785 },
+  { key: 'E', label: 'Categoría E', aporteObraSocial: 22864 },
+  { key: 'F', label: 'Categoría F', aporteObraSocial: 25150 },
+  { key: 'G', label: 'Categoría G', aporteObraSocial: 35210 },
+  { key: 'H', label: 'Categoría H', aporteObraSocial: 49294 },
+  { key: 'I', label: 'Categoría I', aporteObraSocial: 69012 },
+  { key: 'J', label: 'Categoría J', aporteObraSocial: 96616 },
+  { key: 'K', label: 'Categoría K', aporteObraSocial: 135263 },
+];
 
 // URL del webhook de GoHighLevel — configurar en .env como VITE_GHL_WEBHOOK
 export const GHL_WEBHOOK = import.meta.env.VITE_GHL_WEBHOOK ?? '';
