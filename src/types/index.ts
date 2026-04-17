@@ -1,3 +1,11 @@
+export interface Promocion {
+  label: string;
+  descripcion: string;
+  tipo: 'permanente' | 'temporal' | 'primera_cuota';
+  duracion_meses?: number;
+  aplica_planes?: string[]; // undefined = todos los planes
+}
+
 export interface Composicion {
   key: string;
   label: string;
@@ -67,18 +75,27 @@ export interface Prepaga {
   color: string;
   activa: boolean;
   planes: Plan[];
+  promociones?: Promocion[];
   getTramo: (edad: number) => string | null;
   mapComp: Record<string, string | null>;
   calcPrecio: (
     plan: Plan,
     edad: number,
     comp: string,
-    modalidad: string
+    modalidad: string,
+    grupo?: GrupoFamiliar
   ) => PrecioResult | null;
 }
 
 export interface ResultadoPrepaga extends Omit<Prepaga, 'planes' | 'getTramo' | 'mapComp' | 'calcPrecio'> {
   planesCalc: ResultadoPlan[];
+  promociones?: Promocion[];
+}
+
+export interface GrupoFamiliar {
+  titular: number;
+  conyuge?: number;
+  hijos: number[]; // edad de cada hijo, en orden
 }
 
 export interface LeadData {

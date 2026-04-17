@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 48" fill="none">
+  <!-- Cruz médica Vitallis -->
+  <!-- Barra horizontal naranja -->
+  <rect x="0" y="14" width="36" height="12" rx="3" fill="#F97316"/>
+  <!-- Barra vertical violeta -->
+  <rect x="12" y="2" width="12" height="36" rx="3" fill="#7B21A8"/>
+  <!-- Texto principal -->
+  <text x="48" y="32" font-family="Arial,Helvetica,sans-serif" font-weight="900" font-size="28" fill="#7B21A8" letter-spacing="2">VITALLIS</text>
+</svg>
