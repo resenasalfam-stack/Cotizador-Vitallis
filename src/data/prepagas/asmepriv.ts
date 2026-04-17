@@ -132,7 +132,7 @@ export const asmepriv: Prepaga = {
     if (compKey === undefined) return null;
     if (compKey === null) return { precio: null, nota: 'No aplica esta composición en ASMEPRIV' };
 
-    const filaTramo = tabla[tramo];
+    const filaTramo = tabla[tramo as TramoKey];
     if (!filaTramo) return null;
 
     // Tramos avanzados solo tienen ind/mat
