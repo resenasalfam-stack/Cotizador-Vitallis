@@ -5,11 +5,15 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:server": "PORT=3001 node server.js",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start": "node server.js"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
+    "express": "^4.21.2",
     "jspdf": "^4.2.1",
     "react": "^19.2.4",
     "react-dom": "^19.2.4"

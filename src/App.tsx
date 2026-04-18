@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import FormCotizador from './components/FormCotizador';
 import ResultadosList from './components/ResultadosList';
 import AdminPanel, { getActivaState } from './components/AdminPanel';
+import VitoChatWidget from './components/VitoChatWidget';
 import { PREPAGAS } from './data/prepagas';
 import { calcularAporte } from './utils/calculos';
 import vitallisLogo from './assets/vitallis-logo.svg';
@@ -196,10 +197,16 @@ export default function App() {
   }
 
   if (vista === 'admin') {
-    return <AdminPanel onBack={irCotizador} />;
+    return (
+      <>
+        <AdminPanel onBack={irCotizador} />
+        <VitoChatWidget />
+      </>
+    );
   }
 
   return (
+    <>
     <div className="app">
       <div className="hero">
         <div className="hero-logo">
@@ -259,5 +266,7 @@ export default function App() {
         />
       </div>
     </div>
+    <VitoChatWidget />
+    </>
   );
 }
