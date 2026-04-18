@@ -173,7 +173,9 @@ export default function App() {
         planesCalc: pp.planes.map(plan => {
           const base = pp.calcPrecio(plan, edadN, comp, mod, grupo);
           if (!base) return { ...plan, res: null };
-          const neto = base.precio != null ? Math.max(0, base.precio - aporte) : null;
+          const neto = base.precio != null
+            ? (base.ignoraAporte ? base.precio : Math.max(0, base.precio - aporte))
+            : null;
           return { ...plan, res: { ...base, neto, aporte } };
         }),
       }));

@@ -1,9 +1,10 @@
 import type { Prepaga, Plan, PrecioResult, GrupoFamiliar } from '../../types';
 
 // SWISS MEDICAL — Directos AMBA — Abril 2026 (precios con IVA)
-// Promos (aplicar manualmente con calculadora según indica el PDF):
+// Promos vigentes (Monotributo y Particular):
 //   - Menores de 26 años: 50% de descuento por 1 año
-//   - 26 a 64 años:       15% de descuento por 1 año
+//   - 26 a 64 años:       25% de descuento por 1 año
+// IMPORTANTE: Para monotributo, los aportes OS NO se descuentan del precio (Swiss no los acepta)
 
 const LISTA: Record<string, Record<string, number>> = {
   's2':    { 'hasta35': 219841, '36-40': 263802, '41-45': 276975, '46-50': 304699, '51-55': 396105, '56-60': 514928, '61+': 648531 },
@@ -71,8 +72,8 @@ export const swissMedical: Prepaga = {
       duracion_meses: 12,
     },
     {
-      label: '15% entre 26 y 64 años (1 año)',
-      descripcion: '15% de descuento durante 1 año para afiliados de 26 a 64 años.',
+      label: '25% entre 26 y 64 años (1 año)',
+      descripcion: '25% de descuento durante 1 año para afiliados de 26 a 64 años.',
       tipo: 'temporal',
       duracion_meses: 12,
     },
@@ -90,13 +91,14 @@ export const swissMedical: Prepaga = {
     'mat+3':    'mat+3',
   },
 
-  calcPrecio(plan, edad, compCanonica, _modalidad, grupo?: GrupoFamiliar): PrecioResult | null {
+  calcPrecio(plan, edad, compCanonica, modalidad, grupo?: GrupoFamiliar): PrecioResult | null {
     const k = plan.id;
     const hijos = HIJOS[k];
+    const esMono = modalidad === 'monotributo';
 
     function promoLabel(e: number): string {
       if (e < 26)  return `${e}a: 50% desc. 1er año`;
-      if (e <= 64) return `${e}a: 15% desc. 1er año`;
+      if (e <= 64) return `${e}a: 25% desc. 1er año`;
       return '';
     }
 
@@ -146,9 +148,13 @@ export const swissMedical: Prepaga = {
       promos.push(notaTitFallback || 'Sin promo etaria (65+). Consultar descuentos.');
     }
 
+    const notaBase = promos.join(' · ');
+    const notaMono = esMono ? 'Swiss Medical no descuenta aportes de monotributo. ' : '';
+
     return {
       precio: Math.round(precio),
-      nota: promos.join(' · '),
+      nota: notaMono + notaBase,
+      ignoraAporte: esMono,
     };
   },
 };

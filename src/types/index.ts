@@ -61,6 +61,8 @@ export interface Plan {
 export interface PrecioResult {
   precio: number | null;
   nota: string | null;
+  /** Cuando true, no se descuenta el aporte obra social del precio (ej: Swiss Medical monotributo) */
+  ignoraAporte?: boolean;
 }
 
 export interface ResultadoPlan extends Plan {
