@@ -52,6 +52,7 @@ export const formed: Prepaga = {
   color: '#2E7D32',
   activa: true,
   planes,
+  dep_aporte_pct: 0.0721, // aporte real dependencia = salario × 7.21% (fórmula: aporte/3×7.21)
 
   promociones: [
     {
@@ -85,8 +86,15 @@ export const formed: Prepaga = {
     'mat+3':    'mat+3',
   },
 
-  calcPrecio(plan, edad, compCanonica, _modalidad, grupo?: GrupoFamiliar): PrecioResult | null {
+  calcPrecio(plan, edad, compCanonica, modalidad, grupo?: GrupoFamiliar): PrecioResult | null {
+    const esDesregulado = modalidad === 'dependencia';
     const edadTit = grupo?.titular ?? edad;
+
+    // FORMED Recibo solo acepta hasta 57 años
+    if (esDesregulado && edadTit > 57) {
+      return { precio: null, nota: 'FORMED Superador Recibo acepta hasta 57 años. Consultar particular.' };
+    }
+
     const tramo = this.getTramo(edadTit);
     if (!tramo) return null;
 
@@ -150,6 +158,12 @@ export const formed: Prepaga = {
         return null;
     }
 
-    return { precio: Math.round(precio), nota };
+    // Desregulados: precio sin IVA (÷1.105)
+    const precioFinal = esDesregulado ? Math.round(precio / 1.105) : precio;
+    const notaFinal = esDesregulado
+      ? (nota ? nota + ' · Precio sin IVA (desregulado).' : 'Precio sin IVA (desregulado).')
+      : nota;
+
+    return { precio: precioFinal, nota: notaFinal };
   },
 };

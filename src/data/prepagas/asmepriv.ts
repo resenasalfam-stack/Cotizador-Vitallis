@@ -89,6 +89,7 @@ export const asmepriv: Prepaga = {
   color: '#D45500',
   activa: true,
   planes,
+  dep_aporte_pct: 0.07, // aporte real = salario × 7% (fórmula: aporte/3×7)
 
   promociones: [
     {
@@ -121,9 +122,15 @@ export const asmepriv: Prepaga = {
     'mat+3':    'mat3',
   },
 
-  calcPrecio(plan, edad, compCanonica, _modalidad, _grupo?: GrupoFamiliar): PrecioResult | null {
+  calcPrecio(plan, edad, compCanonica, modalidad, _grupo?: GrupoFamiliar): PrecioResult | null {
+    const esDesregulado = modalidad === 'dependencia';
     const tramo = this.getTramo(edad);
     if (!tramo) return null;
+
+    // Para desregulados (recibo), solo tramos 18-59
+    if (esDesregulado && (tramo === '60-64' || tramo === '65-69' || tramo === '70-71')) {
+      return { precio: null, nota: 'ASMEPRIV Superador Recibo: solo hasta 59 años. Consultar con asesor.' };
+    }
 
     const tabla = TABLAS[plan.id];
     if (!tabla) return null;
@@ -141,12 +148,15 @@ export const asmepriv: Prepaga = {
       return { precio: null, nota: 'Para este tramo etario, ASMEPRIV solo cotiza Individual y Matrimonio. Consultar con asesor.' };
     }
 
-    const precio = filaTramo[compKey];
-    if (precio == null || precio === 0) return { precio: null, nota: 'No disponible en este tramo. Consultar con asesor.' };
+    const precioLista = filaTramo[compKey];
+    if (precioLista == null || precioLista === 0) return { precio: null, nota: 'No disponible en este tramo. Consultar con asesor.' };
 
-    return {
-      precio,
-      nota: 'Precio Lista. On Demand disponible (~30% menos) con cualquier medio de pago.',
-    };
+    // Desregulados: precio sin IVA (÷1.105). Particulares/mono: precio lista con IVA.
+    const precio = esDesregulado ? Math.round(precioLista / 1.105) : precioLista;
+    const nota = esDesregulado
+      ? 'Precio sin IVA (desregulado). On Demand disponible (~30% menos).'
+      : 'Precio Lista con IVA. On Demand disponible (~30% menos) con cualquier medio de pago.';
+
+    return { precio, nota };
   },
 };

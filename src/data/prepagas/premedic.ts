@@ -100,6 +100,7 @@ export const premedic: Prepaga = {
   color: '#0A5C9A',
   activa: true,
   planes,
+  dep_aporte_pct: 0.0765, // aporte real dependencia = salario × 7.65% (fórmula: aporte/3×7.65)
 
   promociones: [
     {
@@ -143,7 +144,8 @@ export const premedic: Prepaga = {
     'ind+2':    null,
   },
 
-  calcPrecio(plan, edad, compCanonica, _modalidad, _grupo?: GrupoFamiliar): PrecioResult | null {
+  calcPrecio(plan, edad, compCanonica, modalidad, _grupo?: GrupoFamiliar): PrecioResult | null {
+    const esDesregulado = modalidad === 'dependencia';
     const tramo = this.getTramo(edad);
     if (!tramo) return null;
 
@@ -161,13 +163,17 @@ export const premedic: Prepaga = {
     const fila = tabla[tramo];
     if (!fila) return null;
 
-    const precio = fila[compCanonica];
-    if (precio == null) return null;
+    const precioBruto = fila[compCanonica];
+    if (precioBruto == null) return null;
+
+    // Desregulados (recibo): precio sin IVA (÷1.105)
+    const precio = esDesregulado ? Math.round(precioBruto / 1.105) : precioBruto;
 
     const tienePromo = PLANES_CON_PROMO.has(plan.id);
-    const nota = tienePromo
+    const notaBase = tienePromo
       ? 'Con débito TC/CBU: 20% off permanente. Transferencia: 15% off. Promo 40% primeros 3 meses con TC.'
       : 'Plan C-100 sin descuentos especiales.';
+    const nota = esDesregulado ? notaBase + ' · Precio sin IVA (desregulado).' : notaBase;
 
     return { precio, nota };
   },

@@ -1,11 +1,12 @@
 import type { Prepaga, Plan, PrecioResult, GrupoFamiliar } from '../../types';
 
 // SWISS MEDICAL — Directos AMBA — Abril 2026 (precios con IVA)
-// Promos vigentes (Monotributo y Particular):
-//   - Menores de 26 años: 50% de descuento por 1 año
-//   - 26 a 64 años:       25% de descuento por 1 año
+// Promos Monotributo/Particular: <26 años 50%, 26-64 años 25% — por 1 año
+// Promos Recibo/Dependencia:     <26 años 50%, 26-64 años 15% — por 1 año
 // IMPORTANTE: Para monotributo, los aportes OS NO se descuentan del precio (Swiss no los acepta)
+// NOTA: aporte real dependencia = salario × 7% (fórmula: aporte/3×7)
 
+// Monotributo / Particular (con IVA)
 const LISTA: Record<string, Record<string, number>> = {
   's2':    { 'hasta35': 219841, '36-40': 263802, '41-45': 276975, '46-50': 304699, '51-55': 396105, '56-60': 514928, '61+': 648531 },
   'smg20': { 'hasta35': 306788, '36-40': 368135, '41-45': 386518, '46-50': 425207, '51-55': 552764, '56-60': 718582, '61+': 905025 },
@@ -13,12 +14,28 @@ const LISTA: Record<string, Record<string, number>> = {
   'smg50': { 'hasta35': 460262, '36-40': 552283, '41-45': 579910, '46-50': 637891, '51-55': 829252, '56-60': 1078060, '61+': 1357774 },
 };
 
-// Tarifas hijos
+// Recibo / Dependencia — Derivación Directa AMBA (Abril 2026)
+const LISTA_RECIBO: Record<string, Record<string, number>> = {
+  's2':    { 'hasta35': 171973, '36-40': 206361, '41-45': 216681, '46-50': 238356, '51-55': 309880, '56-60': 402830, '61+': 507321 },
+  'smg20': { 'hasta35': 239988, '36-40': 287976, '41-45': 302377, '46-50': 332625, '51-55': 432438, '56-60': 562149, '61+': 707966 },
+  'smg30': { 'hasta35': 264406, '36-40': 317277, '41-45': 333123, '46-50': 366461, '51-55': 476389, '56-60': 619306, '61+': 779997 },
+  'smg50': { 'hasta35': 373935, '36-40': 448733, '41-45': 471157, '46-50': 518297, '51-55': 673772, '56-60': 875888, '61+': 1103110 },
+};
+
+// Hijos — Monotributo/Particular
 const HIJOS: Record<string, { primer: number; adicional: number }> = {
   s2:    { primer: 185837, adicional: 133375 },
   smg20: { primer: 259335, adicional: 186125 },
   smg30: { primer: 301712, adicional: 216317 },
   smg50: { primer: 342378, adicional: 244800 },
+};
+
+// Hijos — Recibo/Dependencia
+const HIJOS_RECIBO: Record<string, { primer: number; adicional: number }> = {
+  s2:    { primer: 137050, adicional: 98985 },
+  smg20: { primer: 191253, adicional: 138133 },
+  smg30: { primer: 222348, adicional: 144362 },
+  smg50: { primer: 251799, adicional: 162949 },
 };
 
 function getTramo(edad: number): string | null {
@@ -63,6 +80,7 @@ export const swissMedical: Prepaga = {
   color: '#C8102E',
   activa: true,
   planes,
+  dep_aporte_pct: 0.07, // aporte real dependencia = salario × 7%
 
   promociones: [
     {
@@ -72,8 +90,8 @@ export const swissMedical: Prepaga = {
       duracion_meses: 12,
     },
     {
-      label: '25% entre 26 y 64 años (1 año)',
-      descripcion: '25% de descuento durante 1 año para afiliados de 26 a 64 años.',
+      label: '25% mono/part · 15% recibo (1 año)',
+      descripcion: 'Monotributo/Particular: 25% off por 1 año (26-64 años). Recibo/Dependencia: 15% off por 1 año (26-64 años).',
       tipo: 'temporal',
       duracion_meses: 12,
     },
@@ -93,28 +111,32 @@ export const swissMedical: Prepaga = {
 
   calcPrecio(plan, edad, compCanonica, modalidad, grupo?: GrupoFamiliar): PrecioResult | null {
     const k = plan.id;
-    const hijos = HIJOS[k];
-    const esMono = modalidad === 'monotributo';
+    const esRecibo = modalidad === 'dependencia';
+    const esMono   = modalidad === 'monotributo';
+
+    const tabla = esRecibo ? LISTA_RECIBO : LISTA;
+    const hijosT = esRecibo ? HIJOS_RECIBO : HIJOS;
+    const hijos  = hijosT[k];
+
+    const descPct = esRecibo ? 15 : 25; // % promo 26-64 años
 
     function promoLabel(e: number): string {
       if (e < 26)  return `${e}a: 50% desc. 1er año`;
-      if (e <= 64) return `${e}a: 25% desc. 1er año`;
+      if (e <= 64) return `${e}a: ${descPct}% desc. 1er año`;
       return '';
     }
 
-    // Precio del titular
     const edadTit = grupo?.titular ?? edad;
     const tramoTit = this.getTramo(edadTit);
     if (!tramoTit) return null;
-    const precioTit = LISTA[k]?.[tramoTit];
+    const precioTit = tabla[k]?.[tramoTit];
     if (precioTit == null) return null;
 
-    // Precio del cónyuge (si aplica)
-    let precioConyuge = precioTit; // fallback a titular si no se ingresó edad
+    let precioConyuge = precioTit;
     if (grupo?.conyuge) {
       const tramoConj = this.getTramo(grupo.conyuge);
       if (!tramoConj) return null;
-      precioConyuge = LISTA[k]?.[tramoConj] ?? precioTit;
+      precioConyuge = tabla[k]?.[tramoConj] ?? precioTit;
     }
 
     let precio: number;
@@ -129,13 +151,12 @@ export const swissMedical: Prepaga = {
       default: return null;
     }
 
-    // Construir nota de promos
     const promos: string[] = [];
     const notaTit = promoLabel(edadTit);
     if (notaTit) promos.push(`Titular: ${notaTit}`);
     if (grupo?.conyuge) {
-      const notaConj = promoLabel(grupo.conyuge);
-      if (notaConj) promos.push(`Cónyuge: ${notaConj}`);
+      const n = promoLabel(grupo.conyuge);
+      if (n) promos.push(`Cónyuge: ${n}`);
     }
     if (grupo?.hijos.length) {
       grupo.hijos.forEach((he, i) => {
@@ -144,16 +165,13 @@ export const swissMedical: Prepaga = {
       });
     }
     if (!promos.length) {
-      const notaTitFallback = promoLabel(edadTit);
-      promos.push(notaTitFallback || 'Sin promo etaria (65+). Consultar descuentos.');
+      promos.push(promoLabel(edadTit) || 'Sin promo etaria (65+). Consultar descuentos.');
     }
 
-    const notaBase = promos.join(' · ');
-    const notaMono = esMono ? 'Swiss Medical no descuenta aportes de monotributo. ' : '';
-
+    const notaMono = esMono ? 'Swiss no descuenta aportes OS de monotributo. ' : '';
     return {
       precio: Math.round(precio),
-      nota: notaMono + notaBase,
+      nota: notaMono + promos.join(' · '),
       ignoraAporte: esMono,
     };
   },

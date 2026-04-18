@@ -173,13 +173,17 @@ export default function App() {
         planesCalc: pp.planes.map(plan => {
           const base = pp.calcPrecio(plan, edadN, comp, mod, grupo);
           if (!base) return { ...plan, res: null };
+          // Cada prepaga puede tener su propio % de aporte para dependencia
+          const aporteParaPP = (mod === 'dependencia' && pp.dep_aporte_pct != null)
+            ? Math.round(salN * pp.dep_aporte_pct)
+            : aporte;
           const neto = base.precio != null
-            ? (base.ignoraAporte ? base.precio : Math.max(0, base.precio - aporte))
+            ? (base.ignoraAporte ? base.precio : Math.max(0, base.precio - aporteParaPP))
             : null;
-          return { ...plan, res: { ...base, neto, aporte } };
+          return { ...plan, res: { ...base, neto, aporte: aporteParaPP } };
         }),
       }));
-  }, [cotizado, edadN, comp, mod, aporte, grupo]);
+  }, [cotizado, edadN, comp, mod, aporte, grupo, salN]);
 
   function irAdmin() {
     setVista('admin');

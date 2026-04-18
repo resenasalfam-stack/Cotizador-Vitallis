@@ -4,6 +4,7 @@ import { bayresplan }   from './bayresplan';
 import { contigo }      from './contigo';
 import { formed }       from './formed';
 import { medicardio }   from './medicardio';
+import { osedaOspoce }  from './oseda_ospoce';
 import { premedic }     from './premedic';
 import { saludCentral } from './salud_central';
 import { swissMedical } from './swiss_medical';
@@ -19,10 +20,10 @@ export const PREPAGAS: Prepaga[] = [
   contigo,
   formed,
   medicardio,
+  osedaOspoce,
   premedic,
   saludCentral,
   swissMedical,
   // pmo_osde,       ← pendiente (PMO)
   // pmo_galeno,     ← pendiente (PMO)
-  // superador_osde, ← pendiente (SUPERADOR)
 ];

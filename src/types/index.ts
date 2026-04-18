@@ -80,6 +80,10 @@ export interface Prepaga {
   promociones?: Promocion[];
   getTramo: (edad: number) => string | null;
   mapComp: Record<string, string | null>;
+  /** Para dependencia: % del salario bruto que la prepaga acepta como aporte real.
+   *  Ej: 0.07 = 7% (ASMEPRIV/Swiss), 0.0721 = FORMED, 0.0765 = PREMEDIC/OSEDA.
+   *  Si no se define se usa el 9% estándar (CFG.dep_empleado + dep_empleador). */
+  dep_aporte_pct?: number;
   calcPrecio: (
     plan: Plan,
     edad: number,
