@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import type { CSSProperties } from 'react';
+import vitoAvatar from '../assets/vito-avatar.png';
 
 interface Msg {
   role: 'user' | 'assistant';
@@ -19,21 +20,20 @@ const S = {
     bottom: 24,
     right: 24,
     zIndex: 9200,
-    width: 54,
-    height: 54,
+    width: 64,
+    height: 64,
     borderRadius: '50%',
-    background: open
-      ? 'linear-gradient(135deg,#4c1272,#7B21A8)'
-      : 'linear-gradient(135deg,#7B21A8,#9333ea)',
+    background: 'transparent',
     border: 'none',
     cursor: 'pointer',
-    boxShadow: '0 4px 20px rgba(123,33,168,.55)',
+    boxShadow: open ? 'none' : '0 4px 24px rgba(123,33,168,.6)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    color: '#fff',
+    padding: 0,
     flexShrink: 0,
     outline: 'none',
+    transition: 'box-shadow .2s',
   }),
 
   panel: (): CSSProperties => ({
@@ -62,18 +62,15 @@ const S = {
   }),
 
   av: (): CSSProperties => ({
-    width: 32,
-    height: 32,
+    width: 36,
+    height: 36,
     borderRadius: '50%',
-    background: 'linear-gradient(135deg,#7B21A8,#F97316)',
+    background: 'transparent',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontWeight: 900,
-    fontSize: 13,
-    color: '#fff',
     flexShrink: 0,
-    fontFamily: "'Fraunces',serif",
+    overflow: 'hidden',
   }),
 
   msgs: (): CSSProperties => ({
@@ -272,7 +269,9 @@ export default function VitoChatWidget() {
 
           {/* Header */}
           <div style={S.head()}>
-            <div style={S.av()}>V</div>
+            <div style={S.av()}>
+              <img src={vitoAvatar} alt="Vito" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            </div>
             <div style={{ flex: 1 }}>
               <div style={{ color: '#fff', fontSize: 14, fontWeight: 700, fontFamily: "'DM Sans',sans-serif" }}>
                 Vito
@@ -345,21 +344,27 @@ export default function VitoChatWidget() {
         title={open ? 'Cerrar Vito' : 'Consultar a Vito'}
         aria-label="Abrir asistente Vito"
       >
-        {open
-          ? <span style={{ fontSize: 24, lineHeight: 1, marginTop: -1 }}>×</span>
-          : (
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-            </svg>
-          )
-        }
+        {open ? (
+          <span style={{
+            width: 64, height: 64, borderRadius: '50%',
+            background: 'linear-gradient(135deg,#4c1272,#7B21A8)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 28, color: '#fff', lineHeight: 1,
+          }}>×</span>
+        ) : (
+          <img
+            src={vitoAvatar}
+            alt="Vito"
+            style={{ width: 64, height: 64, borderRadius: '50%', objectFit: 'cover', display: 'block' }}
+          />
+        )}
         {/* Badge de no leído */}
         {!open && unread && (
           <span style={{
-            position: 'absolute', top: -3, right: -3,
-            width: 16, height: 16, borderRadius: '50%',
+            position: 'absolute', top: 0, right: 0,
+            width: 18, height: 18, borderRadius: '50%',
             background: '#F97316', border: '2px solid #0d0618',
-            fontSize: 9, fontWeight: 700, color: '#fff',
+            fontSize: 10, fontWeight: 700, color: '#fff',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>!</span>
         )}
