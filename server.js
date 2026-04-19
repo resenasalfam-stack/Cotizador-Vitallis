@@ -64,12 +64,12 @@ Carencias específicas, preexistencias, cartilla de prestadores, condiciones con
 ];
 
 // ── Claude API ───────────────────────────────────────────────────────────────
-const apiKey = process.env.CLAUDE_API_KEY;
+const apiKey = process.env.ANTHROPIC_API_KEY || process.env.CLAUDE_API_KEY;
 let anthropic = null;
 if (apiKey) {
   anthropic = new Anthropic({ apiKey });
 } else {
-  console.warn('⚠️  CLAUDE_API_KEY no configurada — Vito no estará disponible');
+  console.warn('⚠️  ANTHROPIC_API_KEY no configurada — Vito no estará disponible');
 }
 
 app.post('/api/vito/chat', async (req, res) => {
