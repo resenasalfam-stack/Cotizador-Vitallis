@@ -1,163 +1,77 @@
-import type { Prepaga, Plan, PrecioResult } from '../../types';
+import type { Prepaga, Plan, PrecioResult, GrupoFamiliar } from '../../types';
+
+// DOCTORED — AMBA — JULIO 2026 (xlsx oficial del Drive LISTA DE PRECIO/JULIO2026)
+// FULL = tarifa de lista · BONI = tarifa bonificada (promocional, consultar condiciones de permanencia)
+// Bandas por plan (500 Plus llega a 46-55; el resto a 56-60). 'adicional_extra' = 3er hijo en adelante.
+
+type DocPlan = { bands: string[]; tarifas: Record<string, (number | null)[]> };
+const FULL: Record<string, DocPlan> = {"500 Plus":{"bands":["18-25","26-35","36-45","46-55","PLAN:","500 Plus","18-25","26-35","36-45","46-55"],"tarifas":{"individual":[93464,130850,155773,200280,null,null,null,null,null,null],"individual+1":[186928,224314,233660,267040,null,null,null,null,null,null],"individual+2":[252353,289738,288181,313772,null,null,null,null,null,null],"matrimonio":[186928,261699,288181,360504,null,null,null,null,null,null],"matrimonio+1":[280392,355163,366067,427264,null,null,null,null,null,null],"matrimonio+2":[345817,420588,420588,473996,null,null,null,null,null,null],"adicional_extra":[65425,65425,54521,46732,null,null,null,null,null,null],"adherente":[93464,130850,155773,200280,null,null,null,null,null,null]}},"1000":{"bands":["18-25","26-35","36-45","46-55","56-60","PLAN:","1000.0","18-25","26-35","36-45","46-55","56-60"],"tarifas":{"individual":[125105,175148,208509,268083,291913,null,null,null,null,null,113218,158505],"individual+1":[250211,300253,312764,357444,361416,null,null,null,null,null,226435,271722],"individual+2":[337785,387827,385742,419997,410068,null,null,null,null,null,305688,350975],"matrimonio":[250211,350295,385742,482550,554634,null,null,null,null,null,226435,317009],"matrimonio+1":[375316,475401,489996,571911,624137,null,null,null,null,null,339653,430227],"matrimonio+2":[462890,562975,562975,634463,672789,null,null,null,null,null,418905,509479],"adicional_extra":[87574,87574,72978,62553,48652,null,null,null,null,null,79252,79252],"adherente":[125105,175148,208509,268083,291913,null,null,null,null,null,113218,158505]}},"2000":{"bands":["18-25","26-35","36-45","46-55","56-60","PLAN:","2000.0","18-25","26-35","36-45","46-55","56-60"],"tarifas":{"individual":[169403,237165,282339,363007,395275,null,null,null,null,null,153306,214629],"individual+1":[338807,406568,423509,484010,489388,null,null,null,null,null,306613,367935],"individual+2":[457389,525151,522327,568712,555267,null,null,null,null,null,413927,475250],"matrimonio":[338807,474330,522327,653413,751022,null,null,null,null,null,306613,429258],"matrimonio+1":[508210,643733,663497,774416,845135,null,null,null,null,null,459919,582564],"matrimonio+2":[626793,762316,762316,859118,911014,null,null,null,null,null,567233,689878],"adicional_extra":[118582,118582,98819,84702,65879,null,null,null,null,null,107314,107314],"adherente":[169403,237165,282339,363007,395275,null,null,null,null,null,153306,214629]}},"3000":{"bands":["18-25","26-35","36-45","46-55","56-60","PLAN:","3000.0","18-25","26-35","36-45","46-55","56-60"],"tarifas":{"individual":[221977,310768,369962,475665,517946,null,null,null,null,null,200884,281238],"individual+1":[443954,532745,554942,634220,641267,null,null,null,null,null,401768,482122],"individual+2":[599338,688129,684429,745208,727591,null,null,null,null,null,542387,622741],"matrimonio":[443954,621535,684429,856197,984098,null,null,null,null,null,401768,562476],"matrimonio+1":[665931,843512,869410,1014752,1107418,null,null,null,null,null,602652,763360],"matrimonio+2":[821315,998896,998896,1125740,1193743,null,null,null,null,null,743271,903979],"adicional_extra":[155384,155384,129487,110988,86324,null,null,null,null,null,140619,140619],"adherente":[221977,310768,369962,475665,517946,null,null,null,null,null,200884,281238]}}};
+const BONI: Record<string, DocPlan> = {"500 Plus":{"bands":["18-25","26-35","36-45","46-55","PLAN:","500 Plus","18-25","26-35","36-45","46-55"],"tarifas":{"individual":[70098,104680,132407,200280,null,null,null,null,63437,94733],"individual+1":[140196,179451,198611,267040,null,null,null,null,126874,162399],"individual+2":[189265,231791,244954,313772,null,null,null,null,171280,209765],"matrimonio":[140196,209359,244954,360504,null,null,null,null,126874,189465],"matrimonio+1":[210294,284131,311157,427264,null,null,null,null,190311,257132],"matrimonio+2":[259363,336470,357500,473996,null,null,null,null,234717,304498],"adicional":[49069,52340,46343,46732,null,null,null,null,44406,47366],"adherente":[70098,104680,132407,200280,null,null,null,null,63437,94733]}},"1000":{"bands":["18-25","26-35","36-45","46-55","56-60","PLAN:","1000.0","18-25","26-35","36-45","46-55","56-60"],"tarifas":{"individual":[62553,87574,125105,187658,262721,null,null,null,56609,79252,113218,169826],"individual+1":[125105,150127,187658,250211,325274,null,null,null,113218,135861,169826,226435],"individual+2":[168892,193913,231445,293998,369061,null,null,null,152844,175487,209453,266061],"matrimonio":[125105,175148,231445,337785,499171,null,null,null,113218,158505,209453,305688],"matrimonio+1":[187658,237700,293998,400337,561723,null,null,null,169826,215113,266061,362296],"matrimonio+2":[231445,281487,337785,444124,605510,null,null,null,209453,254740,305688,401922],"adicional":[43787,43787,43787,43787,43787,null,null,null,39626,39626,39626,39626],"adherente":[62553,87574,125105,187658,262721,null,null,null,56609,79252,113218,169826]}},"2000":{"bands":["18-25","26-35","36-45","46-55","56-60","PLAN:","2000.0","18-25","26-35","36-45","46-55","56-60"],"tarifas":{"individual":[84702,118582,169403,254105,355747,null,null,null,76653,107314,153306,229959],"individual+1":[169403,203284,254105,338807,440449,null,null,null,153306,183968,229959,306613],"individual+2":[228695,262575,313396,398098,499740,null,null,null,206964,237625,283617,360270],"matrimonio":[169403,237165,313396,457389,675920,null,null,null,153306,214629,283617,413927],"matrimonio+1":[254105,321867,398098,542091,760622,null,null,null,229959,291282,360270,490580],"matrimonio+2":[313396,381158,457389,601382,819913,null,null,null,283617,344939,413927,544237],"adicional":[59291,59291,59291,59291,59291,null,null,null,53657,53657,53657,53657],"adherente":[84702,118582,169403,254105,355747,null,null,null,76653,107314,153306,229959]}},"3000":{"bands":["18-25","26-35","36-45","46-55","56-60","PLAN:","3000.0","18-25","26-35","36-45","46-55","56-60"],"tarifas":{"individual":[110988,155384,221977,332965,466152,null,null,null,100442,140619,200884,301326],"individual+1":[221977,266372,332965,443954,577140,null,null,null,200884,241061,301326,401768],"individual+2":[299669,344064,410657,521646,654832,null,null,null,271194,311370,371636,472078],"matrimonio":[221977,310768,410657,599338,885688,null,null,null,200884,281238,371636,542387],"matrimonio+1":[332965,421756,521646,710326,996677,null,null,null,301326,381680,472078,642829],"matrimonio+2":[410657,499448,599338,788018,null,null,null,null,371636,451989,542387,713139],"adicional":[77692,77692,77692,77692,77692,null,null,null,70309,70309,70309,70309],"adherente":[110988,155384,221977,332965,466152,null,null,null,100442,140619,200884,301326]}}};
+
+function bandIdx(edad: number, bands: string[]): number | null {
+  const b = edad <= 25 ? '18-25' : edad <= 35 ? '26-35' : edad <= 45 ? '36-45' : edad <= 55 ? '46-55' : edad <= 60 ? '56-60' : null;
+  return b && bands.includes(b) ? bands.indexOf(b) : null;
+}
 
 const planes: Plan[] = [
-  {
-    id: 'd500p', nombre: 'Plan 500 Plus', nivel: 1,
-    descripcion: 'Plan base · Cobertura esencial',
-    tarifas: {
-      con_iva: {
-        '18-25': { individual: 86541,  matrimonio: 173081, 'ind+1': 173081, 'ind+2': 233660, 'mat+1': 259622, 'mat+2': 320200 },
-        '25-35': { individual: 121157, matrimonio: 242314, 'ind+1': 207697, 'ind+2': 268276, 'mat+1': 328854, 'mat+2': 389433 },
-        '36-45': { individual: 144234, matrimonio: 266834, 'ind+1': 216352, 'ind+2': 266834, 'mat+1': 338951, 'mat+2': 389433 },
-        '46-55': { individual: 185444, matrimonio: 333799, 'ind+1': 247259, 'ind+2': 290529, 'mat+1': 395614, 'mat+2': 438884 },
-        '56-60': { individual: 201928, matrimonio: 383663, 'ind+1': 250006, 'ind+2': 283661, 'mat+1': 431741, 'mat+2': 465396 },
-        '61-69': { individual: 225006, matrimonio: 438761, 'ind+1': 268276, 'ind+2': 298565, 'mat+1': 482031, 'mat+2': 512320 },
-        '70-79': { individual: 259622, matrimonio: 519244, 'ind+1': 302892, 'ind+2': 333181, 'mat+1': 562514, 'mat+2': 592803 },
-      },
-      sin_iva: {
-        '18-25': { individual: 78317,  matrimonio: 156635, 'ind+1': 156635, 'ind+2': 211457, 'mat+1': 234952, 'mat+2': 289774 },
-        '25-35': { individual: 109644, matrimonio: 219288, 'ind+1': 187961, 'ind+2': 242784, 'mat+1': 297606, 'mat+2': 352428 },
-        '36-45': { individual: 130529, matrimonio: 241478, 'ind+1': 195793, 'ind+2': 241478, 'mat+1': 306743, 'mat+2': 352428 },
-        '46-55': { individual: 167823, matrimonio: 302081, 'ind+1': 223764, 'ind+2': 262922, 'mat+1': 358022, 'mat+2': 397181 },
-        '56-60': { individual: 182740, matrimonio: 347207, 'ind+1': 226250, 'ind+2': 256707, 'mat+1': 390716, 'mat+2': 421173 },
-        '61-69': { individual: 203625, matrimonio: 397069, 'ind+1': 242784, 'ind+2': 270195, 'mat+1': 436227, 'mat+2': 463638 },
-        '70-79': { individual: 234952, matrimonio: 469904, 'ind+1': 274111, 'ind+2': 301522, 'mat+1': 509062, 'mat+2': 536473 },
-      },
-    },
-    adicional_3hijos: { con_iva: 60578, sin_iva: 54822 },
-  },
-  {
-    id: 'd1000', nombre: 'Plan 1000', nivel: 2,
-    descripcion: 'Cobertura media · Más prestadores',
-    tarifas: {
-      con_iva: {
-        '18-25': { individual: 115838, matrimonio: 231676, 'ind+1': 231676, 'ind+2': 312763, 'mat+1': 347515, 'mat+2': 428601 },
-        '25-35': { individual: 162174, matrimonio: 324347, 'ind+1': 278012, 'ind+2': 359098, 'mat+1': 440185, 'mat+2': 521272 },
-        '36-45': { individual: 193064, matrimonio: 357168, 'ind+1': 289596, 'ind+2': 357168, 'mat+1': 453700, 'mat+2': 521272 },
-        '46-55': { individual: 248225, matrimonio: 446805, 'ind+1': 330966, 'ind+2': 388885, 'mat+1': 529546, 'mat+2': 587465 },
-        '56-60': { individual: 270289, matrimonio: 513549, 'ind+1': 334644, 'ind+2': 379692, 'mat+1': 577904, 'mat+2': 622952 },
-        '61-69': { individual: 301179, matrimonio: 587300, 'ind+1': 359098, 'ind+2': 399642, 'mat+1': 645219, 'mat+2': 685762 },
-        '70-79': { individual: 347515, matrimonio: 695029, 'ind+1': 405434, 'ind+2': 445977, 'mat+1': 752948, 'mat+2': 793492 },
-      },
-      sin_iva: {
-        '18-25': { individual: 104831, matrimonio: 209662, 'ind+1': 209662, 'ind+2': 283044, 'mat+1': 314493, 'mat+2': 387875 },
-        '25-35': { individual: 146763, matrimonio: 293527, 'ind+1': 251594, 'ind+2': 324976, 'mat+1': 398358, 'mat+2': 471739 },
-        '36-45': { individual: 174718, matrimonio: 323229, 'ind+1': 262077, 'ind+2': 323229, 'mat+1': 410588, 'mat+2': 471739 },
-        '46-55': { individual: 224638, matrimonio: 404348, 'ind+1': 299517, 'ind+2': 351933, 'mat+1': 479227, 'mat+2': 531643 },
-        '56-60': { individual: 244606, matrimonio: 464751, 'ind+1': 302845, 'ind+2': 343613, 'mat+1': 522990, 'mat+2': 563758 },
-        '61-69': { individual: 272561, matrimonio: 531493, 'ind+1': 324976, 'ind+2': 361667, 'mat+1': 583908, 'mat+2': 620599 },
-        '70-79': { individual: 314493, matrimonio: 628986, 'ind+1': 366908, 'ind+2': 403599, 'mat+1': 681401, 'mat+2': 718092 },
-      },
-    },
-    adicional_3hijos: { con_iva: 81087, sin_iva: 73382 },
-  },
-  {
-    id: 'd2000', nombre: 'Plan 2000', nivel: 3,
-    descripcion: 'Cobertura completa · Sanatorios premium',
-    tarifas: {
-      con_iva: {
-        '18-25': { individual: 156855, matrimonio: 313710, 'ind+1': 313710, 'ind+2': 423508, 'mat+1': 470565, 'mat+2': 580363 },
-        '25-35': { individual: 219597, matrimonio: 439194, 'ind+1': 376452, 'ind+2': 486250, 'mat+1': 596048, 'mat+2': 705847 },
-        '36-45': { individual: 261425, matrimonio: 483636, 'ind+1': 392137, 'ind+2': 483636, 'mat+1': 614348, 'mat+2': 705847 },
-        '46-55': { individual: 336118, matrimonio: 605012, 'ind+1': 448157, 'ind+2': 526584, 'mat+1': 717051, 'mat+2': 795478 },
-        '56-60': { individual: 365995, matrimonio: 695390, 'ind+1': 453136, 'ind+2': 514135, 'mat+1': 782531, 'mat+2': 843530 },
-        '61-69': { individual: 407823, matrimonio: 795254, 'ind+1': 486250, 'ind+2': 541149, 'mat+1': 873681, 'mat+2': 928581 },
-        '70-79': { individual: 470565, matrimonio: 941129, 'ind+1': 548992, 'ind+2': 603891, 'mat+1': 1019556, 'mat+2': 1074456 },
-      },
-      sin_iva: {
-        '18-25': { individual: 141950, matrimonio: 283900, 'ind+1': 283900, 'ind+2': 383265, 'mat+1': 425850, 'mat+2': 525215 },
-        '25-35': { individual: 198730, matrimonio: 397460, 'ind+1': 340680, 'ind+2': 440045, 'mat+1': 539410, 'mat+2': 638775 },
-        '36-45': { individual: 236583, matrimonio: 437679, 'ind+1': 354875, 'ind+2': 437679, 'mat+1': 555971, 'mat+2': 638775 },
-        '46-55': { individual: 304179, matrimonio: 547522, 'ind+1': 405572, 'ind+2': 476547, 'mat+1': 648915, 'mat+2': 719890 },
-        '56-60': { individual: 331217, matrimonio: 629312, 'ind+1': 410078, 'ind+2': 465281, 'mat+1': 708173, 'mat+2': 763376 },
-        '61-69': { individual: 369070, matrimonio: 719687, 'ind+1': 440045, 'ind+2': 489728, 'mat+1': 790662, 'mat+2': 840345 },
-        '70-79': { individual: 425850, matrimonio: 851701, 'ind+1': 496825, 'ind+2': 546508, 'mat+1': 922676, 'mat+2': 972358 },
-      },
-    },
-    adicional_3hijos: { con_iva: 109798, sin_iva: 99365 },
-  },
-  {
-    id: 'd3000', nombre: 'Plan 3000', nivel: 4,
-    descripcion: 'Plan premium · Máxima cobertura',
-    tarifas: {
-      con_iva: {
-        '18-25': { individual: 205534, matrimonio: 411068, 'ind+1': 411068, 'ind+2': 554942, 'mat+1': 616602, 'mat+2': 760476 },
-        '25-35': { individual: 287748, matrimonio: 575495, 'ind+1': 493281, 'ind+2': 637155, 'mat+1': 781029, 'mat+2': 924903 },
-        '36-45': { individual: 342557, matrimonio: 633730, 'ind+1': 513835, 'ind+2': 633730, 'mat+1': 805008, 'mat+2': 924903 },
-        '46-55': { individual: 440430, matrimonio: 792774, 'ind+1': 587240, 'ind+2': 690007, 'mat+1': 939584, 'mat+2': 1042351 },
-        '56-60': { individual: 479579, matrimonio: 911200, 'ind+1': 593765, 'ind+2': 673695, 'mat+1': 1025386, 'mat+2': 1105316 },
-        '61-69': { individual: 534388, matrimonio: 1042057, 'ind+1': 637155, 'ind+2': 709092, 'mat+1': 1144824, 'mat+2': 1216761 },
-        '70-79': { individual: 616602, matrimonio: 1233204, 'ind+1': 719369, 'ind+2': 791306, 'mat+1': 1335971, 'mat+2': 1407907 },
-      },
-      sin_iva: {
-        '18-25': { individual: 186004, matrimonio: 372007, 'ind+1': 372007, 'ind+2': 502210, 'mat+1': 558011, 'mat+2': 688213 },
-        '25-35': { individual: 260405, matrimonio: 520810, 'ind+1': 446409, 'ind+2': 576611, 'mat+1': 706814, 'mat+2': 837016 },
-        '36-45': { individual: 310006, matrimonio: 573511, 'ind+1': 465009, 'ind+2': 573511, 'mat+1': 728514, 'mat+2': 837016 },
-        '46-55': { individual: 398579, matrimonio: 717442, 'ind+1': 531439, 'ind+2': 624441, 'mat+1': 850302, 'mat+2': 943304 },
-        '56-60': { individual: 434008, matrimonio: 824616, 'ind+1': 537344, 'ind+2': 609678, 'mat+1': 927951, 'mat+2': 1000286 },
-        '61-69': { individual: 483609, matrimonio: 943038, 'ind+1': 576611, 'ind+2': 641712, 'mat+1': 1036040, 'mat+2': 1101141 },
-        '70-79': { individual: 558011, matrimonio: 1116021, 'ind+1': 651012, 'ind+2': 716114, 'mat+1': 1209023, 'mat+2': 1274124 },
-      },
-    },
-    adicional_3hijos: { con_iva: 143874, sin_iva: 130202 },
-  },
+  { id: '500 Plus', nombre: 'Plan 500 Plus', nivel: 1, descripcion: 'Plan base · Cobertura esencial', tarifas: { con_iva: null, sin_iva: null } },
+  { id: '1000', nombre: 'Plan 1000', nivel: 2, descripcion: 'Cobertura media · Más prestadores', tarifas: { con_iva: null, sin_iva: null } },
+  { id: '2000', nombre: 'Plan 2000', nivel: 3, descripcion: 'Cobertura completa · Sanatorios premium', tarifas: { con_iva: null, sin_iva: null } },
+  { id: '3000', nombre: 'Plan 3000', nivel: 4, descripcion: 'Plan premium · Máxima cobertura', tarifas: { con_iva: null, sin_iva: null } },
 ];
 
 export const doctored: Prepaga = {
   id: 'doctored',
-  nombre: 'Doctored',
-  vigencia: 'Abril 2026',
+  nombre: 'DOCTORED',
+  vigencia: 'Julio 2026',
   zona: 'AMBA',
   color: '#00796B',
   activa: true,
   planes,
 
   getTramo(edad) {
-    if (edad < 18)               return 'menor18';
-    if (edad >= 18 && edad <= 25) return '18-25';
-    if (edad > 25  && edad <= 35) return '25-35';
-    if (edad > 35  && edad <= 45) return '36-45';
-    if (edad > 45  && edad <= 55) return '46-55';
-    if (edad > 55  && edad <= 60) return '56-60';
-    if (edad > 60  && edad <= 69) return '61-69';
-    if (edad > 69  && edad <= 79) return '70-79';
+    if (edad < 18) return 'menor18';
+    if (edad <= 25) return '18-25';
+    if (edad <= 35) return '26-35';
+    if (edad <= 45) return '36-45';
+    if (edad <= 55) return '46-55';
+    if (edad <= 60) return '56-60';
     return null;
   },
 
   mapComp: {
-    individual: 'individual',
-    matrimonio: 'matrimonio',
-    'ind+1':    'ind+1',
-    'ind+2':    'ind+2',
-    'mat+1':    'mat+1',
-    'mat+2':    'mat+2',
-    'mat+3':    'mat+2', // usa mat+2 + adicional_3hijos
+    individual: 'individual', matrimonio: 'matrimonio',
+    'ind+1': 'individual+1', 'ind+2': 'individual+2',
+    'mat+1': 'matrimonio+1', 'mat+2': 'matrimonio+2',
+    'mat+3': 'matrimonio+2', // matrimonio+2 + adicional por hijo extra
   },
 
-  calcPrecio(plan, edad, compCanonica, modalidad): PrecioResult | null {
-    const tramo = this.getTramo(edad);
-    if (!tramo) return null;
-    if (tramo === 'menor18') return { precio: null, nota: 'Doctored: edad mínima 18 años' };
+  calcPrecio(plan, edad, compCanonica, _modalidad, grupo?: GrupoFamiliar): PrecioResult | null {
+    const edadTit = grupo?.titular ?? edad;
+    if (edadTit < 18) return { precio: null, nota: 'Doctored: edad mínima 18 años' };
+    const dFull = FULL[plan.id];
+    if (!dFull) return null;
+    const ti = bandIdx(edadTit, dFull.bands);
+    if (ti == null) return { precio: null, nota: 'Edad fuera de rango de lista — consultar' };
 
-    const usaIVA  = modalidad === 'particular';
-    const tablaKey = usaIVA ? 'con_iva' : 'sin_iva';
-    const tabla = plan.tarifas[tablaKey];
-    if (!tabla) return null;
+    const compKey = this.mapComp[compCanonica] as string;
+    let precio = dFull.tarifas[compKey]?.[ti] ?? null;
+    if (precio == null) return { precio: null, nota: 'No disponible' };
 
-    const compKey  = this.mapComp[compCanonica];
     const es3hijos = compCanonica === 'mat+3';
-
-    const t = tabla[tramo];
-    if (!t) return null;
-    let precio = t[compKey as string];
-    if (precio === undefined) return { precio: null, nota: 'No disponible' };
-
-    let nota: string | null = null;
-    if (es3hijos && plan.adicional_3hijos) {
-      const adicional = plan.adicional_3hijos[tablaKey as 'con_iva' | 'sin_iva'] ?? 0;
-      precio += adicional;
-      nota = `Incluye adicional 3er hijo ($${Math.round(adicional).toLocaleString('es-AR')})`;
+    let boniPrecio = BONI[plan.id]?.tarifas[compKey]?.[ti] ?? null;
+    if (es3hijos) {
+      const adic = dFull.tarifas['adicional_extra']?.[ti];
+      if (adic != null) precio += adic;
+      const adicB = BONI[plan.id]?.tarifas['adicional_extra']?.[ti];
+      if (boniPrecio != null && adicB != null) boniPrecio += adicB;
     }
-    return { precio, nota };
+
+    const notas: string[] = [];
+    if (es3hijos) notas.push('Incluye adicional 3er hijo');
+    if (boniPrecio != null && boniPrecio < precio) {
+      notas.push(`Tarifa bonificada: $${Math.round(boniPrecio).toLocaleString('es-AR')} (consultar condiciones)`);
+    }
+    return { precio: Math.round(precio), nota: notas.length ? notas.join(' · ') : null };
   },
 };

@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import FormCotizador from './components/FormCotizador';
 import ResultadosList from './components/ResultadosList';
+import Materiales from './components/Materiales';
 import AdminPanel, { getActivaState } from './components/AdminPanel';
 import VitoChatWidget from './components/VitoChatWidget';
 import { PREPAGAS } from './data/prepagas';
@@ -106,6 +107,20 @@ const css = `
   font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
   color:rgba(123,33,168,.5);
 }
+
+/* ── Tabs Cotizador / Materiales ── */
+.vista-tabs{display:flex;justify-content:center;gap:8px;margin-top:16px;}
+.vista-tab{
+  padding:9px 18px;border-radius:22px;
+  border:1px solid rgba(168,85,247,.3);background:transparent;
+  color:rgba(255,255,255,.55);font-family:'DM Sans',sans-serif;
+  font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;white-space:nowrap;
+}
+.vista-tab.on{
+  background:linear-gradient(135deg,#7B21A8,#9333ea);
+  border-color:transparent;color:#fff;
+  box-shadow:0 6px 18px rgba(123,33,168,.4);
+}
 `;
 
 if (typeof document !== 'undefined' && !document.getElementById('app-styles')) {
@@ -115,11 +130,13 @@ if (typeof document !== 'undefined' && !document.getElementById('app-styles')) {
   document.head.appendChild(el);
 }
 
-type Vista = 'cotizador' | 'admin';
+type Vista = 'cotizador' | 'materiales' | 'admin';
 
 export default function App() {
   const [vista, setVista] = useState<Vista>(
-    window.location.hash === '#admin' ? 'admin' : 'cotizador'
+    window.location.hash === '#admin' ? 'admin'
+      : window.location.hash === '#materiales' ? 'materiales'
+      : 'cotizador'
   );
 
   const [edad,        setEdad]        = useState('');
@@ -225,45 +242,66 @@ export default function App() {
             Vitallis · Asesoría en Salud
           </div>
         </div>
+
+        <div className="vista-tabs">
+          <button
+            className={`vista-tab${vista === 'cotizador' ? ' on' : ''}`}
+            onClick={() => { setVista('cotizador'); window.location.hash = ''; }}
+          >
+            💰 Cotizador
+          </button>
+          <button
+            className={`vista-tab${vista === 'materiales' ? ' on' : ''}`}
+            onClick={() => { setVista('materiales'); window.location.hash = '#materiales'; }}
+          >
+            📂 Materiales
+          </button>
+        </div>
       </div>
 
       <div className="wrap">
-        <FormCotizador
-          edad={edad}
-          setEdad={v => { setEdad(v); setCotizado(false); }}
-          edadConyuge={edadConyuge}
-          setEdadConyuge={v => { setEdadConyuge(v); setCotizado(false); }}
-          edadesHijos={edadesHijos}
-          setEdadHijo={(i, v) => { setEdadHijo(i, v); setCotizado(false); }}
-          comp={comp}
-          setComp={v => { setComp(v); setCotizado(false); }}
-          mod={mod}
-          setMod={v => { setMod(v); setCotizado(false); }}
-          salario={salario}
-          setSalario={v => { setSalario(v); setCotizado(false); }}
-          categoriaMono={categoriaMono}
-          setCategoriaMono={v => { setCategoriaMono(v); setCotizado(false); }}
-          aporte={aporte}
-          canCot={canCot}
-          onCotizar={() => setCotizado(true)}
-        />
+        {vista === 'materiales' ? (
+          <Materiales />
+        ) : (
+          <>
+            <FormCotizador
+              edad={edad}
+              setEdad={v => { setEdad(v); setCotizado(false); }}
+              edadConyuge={edadConyuge}
+              setEdadConyuge={v => { setEdadConyuge(v); setCotizado(false); }}
+              edadesHijos={edadesHijos}
+              setEdadHijo={(i, v) => { setEdadHijo(i, v); setCotizado(false); }}
+              comp={comp}
+              setComp={v => { setComp(v); setCotizado(false); }}
+              mod={mod}
+              setMod={v => { setMod(v); setCotizado(false); }}
+              salario={salario}
+              setSalario={v => { setSalario(v); setCotizado(false); }}
+              categoriaMono={categoriaMono}
+              setCategoriaMono={v => { setCategoriaMono(v); setCotizado(false); }}
+              aporte={aporte}
+              canCot={canCot}
+              onCotizar={() => setCotizado(true)}
+            />
 
-        {cotizado && resultados.length > 0 && (
-          <div className="section-sep">
-            <div className="section-sep-line" />
-            <div className="section-sep-label">Resultados</div>
-            <div className="section-sep-line" />
-          </div>
+            {cotizado && resultados.length > 0 && (
+              <div className="section-sep">
+                <div className="section-sep-line" />
+                <div className="section-sep-label">Resultados</div>
+                <div className="section-sep-line" />
+              </div>
+            )}
+
+            <ResultadosList
+              resultados={cotizado ? resultados : []}
+              edad={edadN}
+              comp={comp}
+              mod={mod}
+              salario={salN}
+              aporte={aporte}
+            />
+          </>
         )}
-
-        <ResultadosList
-          resultados={cotizado ? resultados : []}
-          edad={edadN}
-          comp={comp}
-          mod={mod}
-          salario={salN}
-          aporte={aporte}
-        />
       </div>
     </div>
     <VitoChatWidget />

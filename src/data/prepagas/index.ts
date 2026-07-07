@@ -2,8 +2,14 @@ import { asismed }      from './asismed';
 import { asmepriv }     from './asmepriv';
 import { bayresplan }   from './bayresplan';
 import { contigo }      from './contigo';
+import { cristal }      from './cristal';
+import { doctored }     from './doctored';
 import { formed }       from './formed';
+import { galeno }       from './galeno';
+import { hominis }      from './hominis';
 import { medicardio }   from './medicardio';
+import { medife }       from './medife';
+import { omint }        from './omint';
 import { osedaOspoce }  from './oseda_ospoce';
 import { premedic }     from './premedic';
 import { saludCentral } from './salud_central';
@@ -18,8 +24,14 @@ export const PREPAGAS: Prepaga[] = [
   asmepriv,
   bayresplan,
   contigo,
+  cristal,
+  doctored,
   formed,
+  galeno,
+  hominis,
   medicardio,
+  medife,
+  omint,
   osedaOspoce,
   premedic,
   saludCentral,

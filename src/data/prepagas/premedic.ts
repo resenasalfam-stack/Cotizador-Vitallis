@@ -1,11 +1,12 @@
 import type { Prepaga, Plan, PrecioResult, GrupoFamiliar } from '../../types';
 
-// PREMEDIC — AMBA — Directos — Abril 2026
-// Promociones (solo aplican a planes 200, 300, 400 y 500 — NO al C-100):
-//   - Débito TC:                 20% permanente
-//   - Débito CBU:                20% permanente
-//   - Efectivo / débito / transferencia: 15% permanente
-//   - Promo 40% AMBA (TC, 3 meses): 40% por 3 meses, luego descuento permanente
+// PREMEDIC — AMBA
+//   con_iva  = Directos particulares — Vigencia ABRIL 2026
+//   sin_iva  = Nómina DESREGULADOS AMBA — Vigencia AGOSTO 2026 (sin gastos administrativos;
+//              bonificaciones suspendidas según nómina oficial)
+// Promociones (solo particulares, planes 200-500 — NO al C-100):
+//   - Débito TC/CBU: 20% permanente · Efectivo/transferencia: 15% permanente
+//   - Promo 40% AMBA (TC, 3 meses)
 
 const planes: Plan[] = [
   {
@@ -20,7 +21,13 @@ const planes: Plan[] = [
         '40-49': { individual: 89740,  matrimonio: 169454, 'mat+1': 205661, 'mat+2': 238657, 'mat+3': 265910 },
         '50-59': { individual: 104534, matrimonio: 197583, 'mat+1': 239144, 'mat+2': 275838, 'mat+3': 301922 },
       },
-      sin_iva: null,
+      // Nómina DESREGULADOS AMBA — Vigencia AGOSTO 2026 (sin gastos administrativos)
+      sin_iva: {
+        '1-29':  { individual: 60041,  matrimonio: 121329, 'mat+1': 150103, 'mat+2': 177438, 'mat+3': 199498 },
+        '30-39': { individual: 81238,  matrimonio: 149720, 'mat+1': 182809, 'mat+2': 217338, 'mat+3': 245536 },
+        '40-49': { individual: 90165,  matrimonio: 170258, 'mat+1': 206637, 'mat+2': 239789, 'mat+3': 267171 },
+        '50-59': { individual: 105030, matrimonio: 198520, 'mat+1': 240278, 'mat+2': 277146, 'mat+3': 303355 },
+      },
     },
     adicional_3hijos: { con_iva: 166885, sin_iva: 166885 },
   },
@@ -36,7 +43,13 @@ const planes: Plan[] = [
         '40-49': { individual: 112418, matrimonio: 212183, 'mat+1': 258221, 'mat+2': 300073, 'mat+3': 333750 },
         '50-59': { individual: 132566, matrimonio: 250239, 'mat+1': 303674, 'mat+2': 350199, 'mat+3': 381832 },
       },
-      sin_iva: null,
+      // Nómina DESREGULADOS AMBA — Vigencia AGOSTO 2026 (sin gastos administrativos)
+      sin_iva: {
+        '1-29':  { individual: 80758,  matrimonio: 163531, 'mat+1': 201225, 'mat+2': 238343, 'mat+3': 269035 },
+        '30-39': { individual: 101380, matrimonio: 187509, 'mat+1': 229327, 'mat+2': 273159, 'mat+3': 308934 },
+        '40-49': { individual: 112951, matrimonio: 213189, 'mat+1': 259445, 'mat+2': 301496, 'mat+3': 335333 },
+        '50-59': { individual: 133194, matrimonio: 251426, 'mat+1': 305115, 'mat+2': 351860, 'mat+3': 383643 },
+      },
     },
     adicional_3hijos: { con_iva: 166885, sin_iva: 166885 },
   },
@@ -52,7 +65,13 @@ const planes: Plan[] = [
         '40-49': { individual: 177435, matrimonio: 320805, 'mat+1': 387671, 'mat+2': 442274, 'mat+3': 484127 },
         '50-59': { individual: 218315, matrimonio: 405483, 'mat+1': 484906, 'mat+2': 540482, 'mat+3': 590121 },
       },
-      sin_iva: null,
+      // Nómina DESREGULADOS AMBA — Vigencia AGOSTO 2026 (sin gastos administrativos)
+      sin_iva: {
+        '1-29':  { individual: 117972, matrimonio: 243810, 'mat+1': 277187, 'mat+2': 327733, 'mat+3': 356411 },
+        '30-39': { individual: 159407, matrimonio: 274502, 'mat+1': 335406, 'mat+2': 396982, 'mat+3': 432662 },
+        '40-49': { individual: 178277, matrimonio: 322326, 'mat+1': 389510, 'mat+2': 444372, 'mat+3': 486423 },
+        '50-59': { individual: 219350, matrimonio: 407407, 'mat+1': 487206, 'mat+2': 543046, 'mat+3': 592920 },
+      },
     },
     adicional_3hijos: { con_iva: 187528, sin_iva: 187528 },
   },
@@ -68,7 +87,13 @@ const planes: Plan[] = [
         '40-49': { individual: 204007, matrimonio: 368594, 'mat+1': 445584, 'mat+2': 508070, 'mat+3': 529678 },
         '50-59': { individual: 245859, matrimonio: 457945, 'mat+1': 547003, 'mat+2': 610074, 'mat+3': 666234 },
       },
-      sin_iva: null,
+      // Nómina DESREGULADOS AMBA — Vigencia AGOSTO 2026 (sin gastos administrativos)
+      sin_iva: {
+        '1-29':  { individual: 136867, matrimonio: 275557, 'mat+1': 336365, 'mat+2': 380965, 'mat+3': 414246 },
+        '30-39': { individual: 186358, matrimonio: 320923, 'mat+1': 391995, 'mat+2': 465176, 'mat+3': 506322 },
+        '40-49': { individual: 204975, matrimonio: 370343, 'mat+1': 447697, 'mat+2': 510481, 'mat+3': 532191 },
+        '50-59': { individual: 247026, matrimonio: 460117, 'mat+1': 549598, 'mat+2': 612968, 'mat+3': 669395 },
+      },
     },
     adicional_3hijos: { con_iva: 225012, sin_iva: 225012 },
   },
@@ -84,7 +109,13 @@ const planes: Plan[] = [
         '40-49': { individual: 289659, matrimonio: 560240, 'mat+1': 690762, 'mat+2': 787607, 'mat+3': 820991 },
         '50-59': { individual: 373656, matrimonio: 710228, 'mat+1': 893017, 'mat+2': 945478, 'mat+3': 1032785 },
       },
-      sin_iva: null,
+      // Nómina DESREGULADOS AMBA — Vigencia AGOSTO 2026 (sin gastos administrativos)
+      sin_iva: {
+        '1-29':  { individual: 194415, matrimonio: 391323, 'mat+1': 521189, 'mat+2': 590534, 'mat+3': 642039 },
+        '30-39': { individual: 264623, matrimonio: 455681, 'mat+1': 570104, 'mat+2': 721167, 'mat+3': 784853 },
+        '40-49': { individual: 291033, matrimonio: 562898, 'mat+1': 694038, 'mat+2': 791343, 'mat+3': 824886 },
+        '50-59': { individual: 375428, matrimonio: 713597, 'mat+1': 897253, 'mat+2': 949963, 'mat+3': 1037684 },
+      },
     },
     adicional_3hijos: { con_iva: 325513, sin_iva: 325513 },
   },
@@ -95,7 +126,7 @@ const PLANES_CON_PROMO = new Set(['p200', 'p300', 'p400', 'p500']);
 export const premedic: Prepaga = {
   id: 'premedic',
   nombre: 'PREMEDIC',
-  vigencia: 'Abril 2026',
+  vigencia: 'Abr 2026 (part.) · Ago 2026 (desreg.)',
   zona: 'AMBA',
   color: '#0A5C9A',
   activa: true,
@@ -105,19 +136,19 @@ export const premedic: Prepaga = {
   promociones: [
     {
       label: '20% débito TC/CBU',
-      descripcion: 'Planes 200-500: 20% de descuento permanente abonando con débito en tarjeta de crédito o CBU.',
+      descripcion: 'Particulares, planes 200-500: 20% de descuento permanente abonando con débito en tarjeta de crédito o CBU.',
       tipo: 'permanente',
       aplica_planes: ['p200', 'p300', 'p400', 'p500'],
     },
     {
       label: '15% efectivo/transferencia',
-      descripcion: 'Planes 200-500: 15% de descuento permanente abonando en efectivo, débito o transferencia.',
+      descripcion: 'Particulares, planes 200-500: 15% de descuento permanente abonando en efectivo, débito o transferencia.',
       tipo: 'permanente',
       aplica_planes: ['p200', 'p300', 'p400', 'p500'],
     },
     {
       label: '40% promo lanzamiento (3 meses)',
-      descripcion: 'Planes 200-500 (AMBA): 40% de descuento por 3 meses abonando con débito en tarjeta de crédito.',
+      descripcion: 'Particulares, planes 200-500 (AMBA): 40% de descuento por 3 meses abonando con débito en tarjeta de crédito.',
       tipo: 'temporal',
       duracion_meses: 3,
       aplica_planes: ['p200', 'p300', 'p400', 'p500'],
@@ -145,7 +176,6 @@ export const premedic: Prepaga = {
   },
 
   calcPrecio(plan, edad, compCanonica, modalidad, _grupo?: GrupoFamiliar): PrecioResult | null {
-    const esDesregulado = modalidad === 'dependencia';
     const tramo = this.getTramo(edad);
     if (!tramo) return null;
 
@@ -157,23 +187,24 @@ export const premedic: Prepaga = {
       return { precio: null, nota: 'Para mayores de 60 años, el precio varía. Consultar con asesor PREMEDIC.' };
     }
 
-    const tabla = plan.tarifas.con_iva;
+    const esDesreg = modalidad === 'dependencia';
+    const tabla = esDesreg ? plan.tarifas.sin_iva : plan.tarifas.con_iva;
     if (!tabla) return null;
 
     const fila = tabla[tramo];
     if (!fila) return null;
 
-    const precioBruto = fila[compCanonica];
-    if (precioBruto == null) return null;
+    const precio = fila[compCanonica];
+    if (precio == null) return null;
 
-    // Desregulados (recibo): precio sin IVA (÷1.105)
-    const precio = esDesregulado ? Math.round(precioBruto / 1.105) : precioBruto;
-
-    const tienePromo = PLANES_CON_PROMO.has(plan.id);
-    const notaBase = tienePromo
-      ? 'Con débito TC/CBU: 20% off permanente. Transferencia: 15% off. Promo 40% primeros 3 meses con TC.'
-      : 'Plan C-100 sin descuentos especiales.';
-    const nota = esDesregulado ? notaBase + ' · Precio sin IVA (desregulado).' : notaBase;
+    let nota: string;
+    if (esDesreg) {
+      nota = 'Desregulados Ago-26 · sin gastos administrativos · bonificaciones suspendidas';
+    } else {
+      nota = PLANES_CON_PROMO.has(plan.id)
+        ? 'Con débito TC/CBU: 20% off permanente. Transferencia: 15% off. Promo 40% primeros 3 meses con TC.'
+        : 'Plan C-100 sin descuentos especiales.';
+    }
 
     return { precio, nota };
   },

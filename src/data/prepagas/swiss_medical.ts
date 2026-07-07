@@ -1,41 +1,73 @@
 import type { Prepaga, Plan, PrecioResult, GrupoFamiliar } from '../../types';
 
-// SWISS MEDICAL — Directos AMBA — Abril 2026 (precios con IVA)
+// SWISS MEDICAL — Directos AMBA — JULIO 2026 (listas oficiales del Drive)
 // Promos Monotributo/Particular: <26 años 50%, 26-64 años 25% — por 1 año
 // Promos Recibo/Dependencia:     <26 años 50%, 26-64 años 15% — por 1 año
 // IMPORTANTE: Para monotributo, los aportes OS NO se descuentan del precio (Swiss no los acepta)
 // NOTA: aporte real dependencia = salario × 7% (fórmula: aporte/3×7)
 
-// Monotributo / Particular (con IVA)
+// Monotributo / Particular (con IVA) — Julio 2026
 const LISTA: Record<string, Record<string, number>> = {
-  's2':    { 'hasta35': 219841, '36-40': 263802, '41-45': 276975, '46-50': 304699, '51-55': 396105, '56-60': 514928, '61+': 648531 },
-  'smg20': { 'hasta35': 306788, '36-40': 368135, '41-45': 386518, '46-50': 425207, '51-55': 552764, '56-60': 718582, '61+': 905025 },
-  'smg30': { 'hasta35': 352424, '36-40': 422909, '41-45': 444071, '46-50': 488478, '51-55': 635005, '56-60': 825512, '61+': 1039652 },
-  'smg50': { 'hasta35': 460262, '36-40': 552283, '41-45': 579910, '46-50': 637891, '51-55': 829252, '56-60': 1078060, '61+': 1357774 },
+  'S1': { 'hasta35': 189674, '36-40': 227609, '41-45': 238989, '46-50': 262905, '51-55': 341743, '56-60': 444291, '61+': 559539 },
+  'SMG02': { 'hasta35': 266258, '36-40': 319509, '41-45': 335485, '46-50': 369057, '51-55': 479727, '56-60': 623680, '61+': 785461 },
+  'S2': { 'hasta35': 238124, '36-40': 285740, '41-45': 300009, '46-50': 330038, '51-55': 429046, '56-60': 557751, '61+': 702465 },
+  'Sport-S': { 'hasta35': 295273, '36-40': 354318, '41-45': 372010, '46-50': 409247, '51-55': 532017, '56-60': 691611, '61+': 871057 },
+  'SMG20': { 'hasta35': 332301, '36-40': 398750, '41-45': 418662, '46-50': 460568, '51-55': 598733, '56-60': 778341, '61+': 980289 },
+  'SMG30': { 'hasta35': 381733, '36-40': 458079, '41-45': 481001, '46-50': 529101, '51-55': 687814, '56-60': 894163, '61+': 1126112 },
+  'Sport': { 'hasta35': 388793, '36-40': 466538, '41-45': 489834, '46-50': 538865, '51-55': 700518, '56-60': 910660, '61+': 1146939 },
+  'SMG40': { 'hasta35': 398982, '36-40': 478801, '41-45': 502706, '46-50': 553006, '51-55': 718896, '56-60': 934565, '61+': 1176996 },
+  'Sport+': { 'hasta35': 454839, '36-40': 545833, '41-45': 573086, '46-50': 630427, '51-55': 819542, '56-60': 1065405, '61+': 1341775 },
+  'SMG50': { 'hasta35': 498539, '36-40': 598212, '41-45': 628137, '46-50': 690939, '51-55': 898215, '56-60': 1167714, '61+': 1470690 },
+  'SMG60': { 'hasta35': 701995, '36-40': 842417, '41-45': 884555, '46-50': 972999, '51-55': 1264899, '56-60': 1644374, '61+': 2070884 },
+  'SMG70': { 'hasta35': 854283, '36-40': 1025151, '41-45': 1076434, '46-50': 1184037, '51-55': 1539260, '56-60': 2001044, '61+': 2520134 },
 };
 
-// Recibo / Dependencia — Derivación Directa AMBA (Abril 2026)
+// Recibo / Dependencia — Derivación Directa AMBA — Julio 2026
 const LISTA_RECIBO: Record<string, Record<string, number>> = {
-  's2':    { 'hasta35': 171973, '36-40': 206361, '41-45': 216681, '46-50': 238356, '51-55': 309880, '56-60': 402830, '61+': 507321 },
-  'smg20': { 'hasta35': 239988, '36-40': 287976, '41-45': 302377, '46-50': 332625, '51-55': 432438, '56-60': 562149, '61+': 707966 },
-  'smg30': { 'hasta35': 264406, '36-40': 317277, '41-45': 333123, '46-50': 366461, '51-55': 476389, '56-60': 619306, '61+': 779997 },
-  'smg50': { 'hasta35': 373935, '36-40': 448733, '41-45': 471157, '46-50': 518297, '51-55': 673772, '56-60': 875888, '61+': 1103110 },
+  'S1': { 'hasta35': 150726, '36-40': 180872, '41-45': 189908, '46-50': 208902, '51-55': 271577, '56-60': 353053, '61+': 444643 },
+  'SMG02': { 'hasta35': 211584, '36-40': 253901, '41-45': 266585, '46-50': 293249, '51-55': 381230, '56-60': 495604, '61+': 624174 },
+  'S2': { 'hasta35': 186275, '36-40': 223522, '41-45': 234700, '46-50': 258178, '51-55': 335651, '56-60': 436330, '61+': 549511 },
+  'Sport-S': { 'hasta35': 230981, '36-40': 277168, '41-45': 291028, '46-50': 320141, '51-55': 416207, '56-60': 541050, '61+': 681394 },
+  'SMG20': { 'hasta35': 259946, '36-40': 311925, '41-45': 327524, '46-50': 360287, '51-55': 468400, '56-60': 608899, '61+': 766842 },
+  'SMG30': { 'hasta35': 286395, '36-40': 343663, '41-45': 360827, '46-50': 396937, '51-55': 516007, '56-60': 670809, '61+': 844864 },
+  'Sport': { 'hasta35': 304137, '36-40': 364952, '41-45': 383203, '46-50': 421536, '51-55': 548028, '56-60': 712411, '61+': 897205 },
+  'SMG40': { 'hasta35': 340316, '36-40': 408379, '41-45': 428782, '46-50': 471693, '51-55': 613163, '56-60': 797112, '61+': 1003933 },
+  'Sport+': { 'hasta35': 387960, '36-40': 465553, '41-45': 488812, '46-50': 537730, '51-55': 699006, '56-60': 908707, '61+': 1144483 },
+  'SMG50': { 'hasta35': 405033, '36-40': 486050, '41-45': 510339, '46-50': 561400, '51-55': 729804, '56-60': 948729, '61+': 1194847 },
+  'SMG60': { 'hasta35': 606092, '36-40': 727321, '41-45': 763701, '46-50': 840076, '51-55': 1092088, '56-60': 1419720, '61+': 1787971 },
+  'SMG70': { 'hasta35': 743136, '36-40': 891785, '41-45': 936369, '46-50': 1029962, '51-55': 1338973, '56-60': 1740659, '61+': 2192251 },
 };
 
 // Hijos — Monotributo/Particular
 const HIJOS: Record<string, { primer: number; adicional: number }> = {
-  s2:    { primer: 185837, adicional: 133375 },
-  smg20: { primer: 259335, adicional: 186125 },
-  smg30: { primer: 301712, adicional: 216317 },
-  smg50: { primer: 342378, adicional: 244800 },
+  'S1': { primer: 135205, adicional: 98053 },
+  'SMG02': { primer: 189796, adicional: 137644 },
+  'S2': { primer: 201291, adicional: 144467 },
+  'Sport-S': { primer: 249601, adicional: 179139 },
+  'SMG20': { primer: 280902, adicional: 201604 },
+  'SMG30': { primer: 326803, adicional: 234307 },
+  'Sport': { primer: 328656, adicional: 235876 },
+  'SMG40': { primer: 341505, adicional: 244610 },
+  'Sport+': { primer: 389315, adicional: 278855 },
+  'SMG50': { primer: 370851, adicional: 265158 },
+  'SMG60': { primer: 400255, adicional: 285706 },
+  'SMG70': { primer: 429601, adicional: 306254 },
 };
 
 // Hijos — Recibo/Dependencia
 const HIJOS_RECIBO: Record<string, { primer: number; adicional: number }> = {
-  s2:    { primer: 137050, adicional: 98985 },
-  smg20: { primer: 191253, adicional: 138133 },
-  smg30: { primer: 222348, adicional: 144362 },
-  smg50: { primer: 251799, adicional: 162949 },
+  'S1': { primer: 111545, adicional: 81592 },
+  'SMG02': { primer: 156583, adicional: 114536 },
+  'S2': { primer: 148448, adicional: 107216 },
+  'Sport-S': { primer: 184075, adicional: 132948 },
+  'SMG20': { primer: 207158, adicional: 149620 },
+  'SMG30': { primer: 240839, adicional: 156367 },
+  'Sport': { primer: 242375, adicional: 175056 },
+  'SMG40': { primer: 251472, adicional: 163060 },
+  'Sport+': { primer: 286678, adicional: 185889 },
+  'SMG50': { primer: 272739, adicional: 176500 },
+  'SMG60': { primer: 294059, adicional: 189886 },
+  'SMG70': { primer: 315379, adicional: 203326 },
 };
 
 function getTramo(edad: number): string | null {
@@ -51,23 +83,63 @@ function getTramo(edad: number): string | null {
 
 const planes: Plan[] = [
   {
-    id: 's2', nombre: 'Plan S2', nivel: 1,
-    descripcion: 'Con copagos · Directos AMBA · Precio con IVA',
+    id: 'S1', nombre: 'Plan S1', nivel: 1,
+    descripcion: 'Internación básica · Solo AMBA',
     tarifas: { con_iva: null, sin_iva: null },
   },
   {
-    id: 'smg20', nombre: 'Plan SMG20', nivel: 2,
-    descripcion: 'Sin copagos · Red SMG · Precio con IVA',
+    id: 'SMG02', nombre: 'Plan SMG02', nivel: 1,
+    descripcion: 'Cartilla básica · Solo AMBA',
     tarifas: { con_iva: null, sin_iva: null },
   },
   {
-    id: 'smg30', nombre: 'Plan SMG30', nivel: 3,
-    descripcion: 'Sin copagos · Red SMG ampliada · Precio con IVA',
+    id: 'S2', nombre: 'Plan S2', nivel: 2,
+    descripcion: 'Internación ampliada · Con copagos',
     tarifas: { con_iva: null, sin_iva: null },
   },
   {
-    id: 'smg50', nombre: 'Plan SMG50', nivel: 5,
-    descripcion: 'Sin copagos + Cirugía Estética · Premium · Precio con IVA',
+    id: 'Sport-S', nombre: 'Plan Sport-S', nivel: 2,
+    descripcion: 'Línea Sport · Internación',
+    tarifas: { con_iva: null, sin_iva: null },
+  },
+  {
+    id: 'SMG20', nombre: 'Plan SMG20', nivel: 2,
+    descripcion: 'Sin copagos · Red SMG',
+    tarifas: { con_iva: null, sin_iva: null },
+  },
+  {
+    id: 'SMG30', nombre: 'Plan SMG30', nivel: 3,
+    descripcion: 'Sin copagos · Red SMG ampliada',
+    tarifas: { con_iva: null, sin_iva: null },
+  },
+  {
+    id: 'Sport', nombre: 'Plan Sport', nivel: 3,
+    descripcion: 'Línea Sport · Cartilla',
+    tarifas: { con_iva: null, sin_iva: null },
+  },
+  {
+    id: 'SMG40', nombre: 'Plan SMG40', nivel: 3,
+    descripcion: 'Red SMG ampliada · Reintegros',
+    tarifas: { con_iva: null, sin_iva: null },
+  },
+  {
+    id: 'Sport+', nombre: 'Plan Sport+', nivel: 4,
+    descripcion: 'Línea Sport · Ampliado',
+    tarifas: { con_iva: null, sin_iva: null },
+  },
+  {
+    id: 'SMG50', nombre: 'Plan SMG50', nivel: 4,
+    descripcion: 'Sin copagos + Cirugía Estética',
+    tarifas: { con_iva: null, sin_iva: null },
+  },
+  {
+    id: 'SMG60', nombre: 'Plan SMG60', nivel: 4,
+    descripcion: 'Premium · Reintegros altos',
+    tarifas: { con_iva: null, sin_iva: null },
+  },
+  {
+    id: 'SMG70', nombre: 'Plan SMG70', nivel: 5,
+    descripcion: 'Plan top · Máxima cobertura',
     tarifas: { con_iva: null, sin_iva: null },
   },
 ];
@@ -75,7 +147,7 @@ const planes: Plan[] = [
 export const swissMedical: Prepaga = {
   id: 'swiss_medical',
   nombre: 'SWISS MEDICAL',
-  vigencia: 'Abril 2026',
+  vigencia: 'Julio 2026',
   zona: 'AMBA',
   color: '#C8102E',
   activa: true,
@@ -117,6 +189,7 @@ export const swissMedical: Prepaga = {
     const tabla = esRecibo ? LISTA_RECIBO : LISTA;
     const hijosT = esRecibo ? HIJOS_RECIBO : HIJOS;
     const hijos  = hijosT[k];
+    if (!hijos) return null;
 
     const descPct = esRecibo ? 15 : 25; // % promo 26-64 años
 
@@ -130,7 +203,7 @@ export const swissMedical: Prepaga = {
     const tramoTit = this.getTramo(edadTit);
     if (!tramoTit) return null;
     const precioTit = tabla[k]?.[tramoTit];
-    if (precioTit == null) return null;
+    if (precioTit == null || precioTit === 0) return null;
 
     let precioConyuge = precioTit;
     if (grupo?.conyuge) {
