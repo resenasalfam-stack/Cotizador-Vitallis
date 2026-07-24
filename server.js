@@ -74,8 +74,38 @@ Para grupos: aporte × (1 + adherentes). Swiss NO descuenta este aporte.
 ## MATERIALES
 La app tiene pestaña "Materiales" (o URL con #materiales): cartillas, descripciones de planes, folletos y listas oficiales de cada marca, con botón para ver y para compartir por WhatsApp al cliente. Si piden una cartilla o folleto, mandalos ahí.
 
+## ASESORÍA COMERCIAL (fuentes: documentos del Drive comercial — citá la fuente entre paréntesis al usar estos datos)
+
+**Presentación de ventas por prepaga** (fuente: FORMAS DE PRESENTACION.docx):
+- Galeno y Omint: solicitud completa (ideal en computadora), firmada a mano y escaneada
+- Avalian, Swiss, Prevención: Excel completo (Prevención + DDJJ)
+- Premedic: Excel completo + solicitud de pago de terceros si corresponde
+
+**Cierres mensuales** (fuente: CIERRES.pdf — fechas estimativas, ejemplo de un mes tipo): ~19 Galeno interior · ~22 Swiss/Medifé/Premedic desreg./Sancor/Omint · ~23 Avalian/Prevención/Hominis/Doctored desregulados · ~25 Galeno BsAs desreg. · ~29 privados (Doctored/Galeno/Avalian/Premedic/Prevención/Hominis). Ventas después de fecha se procesan igual; la liquidación es por venta concretada en el mes. El OK de traspaso (TP) demora 48-72 hs — no presentar desregulados sobre el cierre.
+
+**MEDIFÉ — documentación de alta** (fuente: Check List Medife):
+- Obligatorios: DNI frente/dorso de todo el grupo + recibo de sueldo (o F.184 y últimos 3 pagos de monotributo) + medio de pago (CBU o foto tarjeta) + cotización con descuentos + si aplica descuento G9: última factura de prepaga anterior o credencial
+- Voluntarios: igual sin recibo de sueldo
+- Solicitud: fecha vigencia, plan, cobertura anterior, DNI/CUIL/nacimiento/nacionalidad/estado civil de todos, domicilio+CP, celular y email del titular, medio de pago; si es obligatorio: razón social, CUIT y sueldo bruto. DDJJ: peso, altura, presión, FUM (desde 12 años; menopausia = "FUM MENOPAUSIA"). Preguntar preexistencias y medicación.
+
+**MEDIFÉ — reglas clave** (fuente: PREGUNTAS FRECUENTES Medife):
+- Edad de ingreso: Voluntarios 21 a 50a11m · Obligatorios 18 a 54a11m. NO toma alta temprana.
+- IMC: 18-30 sin auditoría · 30-35 pasa por auditoría médica
+- Directos: doble facturación en el 2º mes del alta (puede pagar la 1ª por Pago Fácil para no acumular)
+- OS a desregular: Monotributo → RNAS 0-0360-3 (OS Programas Médicos SACM) · Recibo → RNAS 9-0140-2 (Medifé Asoc. Civil)
+- Medicamentos: 40% general; crónicos 70-100% según patología. Celiaquía: sobrecuota.
+- Patologías declarables SIN auditoría: alergias, apendicitis, asma niños ≤8, fimosis, fracturas no quirúrgicas, hepatitis A, vesícula/hernias inguinales (<50) operadas, juanetes/cataratas/amígdalas/adenoides/tímpanos operados, quiste sacro operado, artroscopia sin secuela, piel (salvo vitiligo/psoriasis), hipertensión desde 40, hipotiroidismo, implantes mamarios.
+
+**DOCTORED — presentación** (fuente: Nueva Presentación de Ventas 2024): venta por mail a entregadefichas2023@hotmail.com con documentación + foto del socio cuerpo entero con DNI en mano + 2 PDFs: (1) Preficha digital + DDJJ (aporte inicial = 3% del recibo; adherentes de mayor a menor; en DDJJ solo marcar lo que se declara + peso/altura) y (2) Reglamento firmado en la última hoja. El médico auditor llama al socio para validar datos y firma digital — AVISARLE al socio antes para evitar rechazos. En privados y Superador, poner el valor de cuota en el cuerpo del mail.
+
+**GALENO — carencias desregulados** (fuente: carta de carencia oficial): inmediato: urgencias, consultas, análisis baja complejidad · 3 meses: kinesiología, fonoaudiología, salud mental · 6 meses: prácticas especializadas (TAC, RMN, ecografías), internaciones programadas, odontología · 10 meses: maternidad · 12 meses: ortodoncia, lentes de contacto/intraoculares, excimer láser.
+
+**AVALIAN — DDJJ** (fuente: instructivo de solicitud): si se declara algo, detallar en observaciones: enfermedad (nombre + tratamiento), medicación (nombre, motivo, dosis diaria), operación (nombre, motivo, año, secuelas).
+
+**PREMEDIC — restricciones** (fuente: OS NO PERMITIDA.pdf): NO toma las OS: OSPILM (110404), OSBARA (124001), OSEPJANA (2204, y sin prestadores RAS ni ASI Salud), OSCEARA (2808). NO pueden ingresar afiliados provenientes de: Crisolmed, Saber Salud, Pilar Plus, Plus Salud, Bayres, ASI Salud, RAS.
+
 ## LO QUE NO SABÉS
-Carencias específicas, preexistencias, cartilla de prestadores, condiciones contractuales detalladas → derivá al material oficial de la prepaga o al equipo Vitallis.`,
+Carencias específicas no listadas, preexistencias complejas, cartilla de prestadores, condiciones contractuales detalladas → derivá al material oficial de la prepaga (pestaña Materiales) o al equipo Vitallis. Si citás un dato de asesoría, mencioná la fuente.`,
     cache_control: { type: 'ephemeral' },
   },
 ];
@@ -89,9 +119,16 @@ if (apiKey) {
   console.warn('⚠️  ANTHROPIC_API_KEY no configurada — Vito no estará disponible');
 }
 
+// Clave de acceso para vendedores (configurable con env VENDEDOR_KEY)
+const VENDEDOR_KEY = process.env.VENDEDOR_KEY || 'vitallis2026';
+
 app.post('/api/vito/chat', async (req, res) => {
   if (!anthropic) {
     return res.status(503).json({ error: 'Vito no configurado. Contactá al administrador.' });
+  }
+
+  if (req.headers['x-vendedor-key'] !== VENDEDOR_KEY) {
+    return res.status(401).json({ error: 'Clave de vendedor incorrecta.' });
   }
 
   const { messages } = req.body;

@@ -10,8 +10,10 @@ interface Msg {
 
 const WELCOME: Msg = {
   role: 'assistant',
-  content: 'Hola! Soy Vito, tu asistente de Vitallis.\nPreguntame sobre planes, coberturas, promos o aportes de cualquier prepaga. 💜',
+  content: 'Hola! Soy Vito, tu asesor comercial de Vitallis. 💜\nPreguntame sobre planes, promos, aportes, documentación de alta, carencias o cierres de cualquier prepaga.',
 };
+
+const KEY_STORAGE = 'vito_vendedor_key';
 
 /* ── Estilos con inline styles garantizados para position:fixed ── */
 const S = {
@@ -188,6 +190,9 @@ export default function VitoChatWidget() {
   const [loading, setLoading] = useState(false);
   const [unread,  setUnread]  = useState(false);
   const [mobile,  setMobile]  = useState(false);
+  const [vKey,    setVKey]    = useState(() => localStorage.getItem(KEY_STORAGE) ?? '');
+  const [keyInput, setKeyInput] = useState('');
+  const [keyError, setKeyError] = useState(false);
   const msgsRef  = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -223,13 +228,18 @@ export default function VitoChatWidget() {
     try {
       const res = await fetch('/api/vito/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'X-Vendedor-Key': vKey },
         body: JSON.stringify({
           messages: newMsgs
             .filter(m => !m.error)
             .map(m => ({ role: m.role, content: m.content })),
         }),
       });
+      if (res.status === 401) {
+        localStorage.removeItem(KEY_STORAGE);
+        setVKey('');
+        throw new Error('Clave de vendedor inválida. Volvé a ingresarla.');
+      }
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
         throw new Error((err as {error?:string}).error ?? `Error ${res.status}`);
@@ -288,6 +298,44 @@ export default function VitoChatWidget() {
             </button>
           </div>
 
+          {/* Gate de vendedores: pedir clave antes de habilitar el chat */}
+          {!vKey ? (
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 24, gap: 12, fontFamily: "'DM Sans',sans-serif" }}>
+              <div style={{ fontSize: 30 }}>🔐</div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: '#1e0a30', textAlign: 'center' }}>
+                Vito es exclusivo para vendedores Vitallis
+              </div>
+              <div style={{ fontSize: 12, color: '#6b7280', textAlign: 'center' }}>
+                Ingresá la clave de vendedor para acceder al asesor comercial.
+              </div>
+              <input
+                type="password"
+                placeholder="Clave de vendedor"
+                value={keyInput}
+                onChange={e => { setKeyInput(e.target.value); setKeyError(false); }}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' && keyInput.trim()) {
+                    localStorage.setItem(KEY_STORAGE, keyInput.trim());
+                    setVKey(keyInput.trim());
+                    setKeyInput('');
+                  }
+                }}
+                style={{ width: '100%', padding: '11px 13px', border: `1.5px solid ${keyError ? '#f87171' : '#e9d5ff'}`, borderRadius: 10, fontSize: 14, fontFamily: "'DM Sans',sans-serif", background: '#faf5ff', color: '#1e0a30', outline: 'none', textAlign: 'center' }}
+              />
+              <button
+                onClick={() => {
+                  if (!keyInput.trim()) { setKeyError(true); return; }
+                  localStorage.setItem(KEY_STORAGE, keyInput.trim());
+                  setVKey(keyInput.trim());
+                  setKeyInput('');
+                }}
+                style={{ width: '100%', padding: '11px', background: 'linear-gradient(135deg,#7B21A8,#9333ea)', color: '#fff', border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: "'DM Sans',sans-serif" }}
+              >
+                Ingresar
+              </button>
+            </div>
+          ) : (
+          <>
           {/* Messages */}
           <div style={S.msgs()} ref={msgsRef}>
             {msgs.map((m, i) => (
@@ -334,6 +382,8 @@ export default function VitoChatWidget() {
               </svg>
             </button>
           </div>
+          </>
+          )}
         </div>
       )}
 
