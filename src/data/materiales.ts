@@ -12,6 +12,15 @@ const folder = (id: string) => `https://drive.google.com/drive/folders/${id}`;
 
 export const EMPRESAS: Empresa[] = [
   {
+    id: 'asesoria-general', nombre: 'Asesoría Vitallis (general)', color: '#F97316', cotiza: false,
+    nota: 'Documentos operativos del equipo comercial',
+    materiales: [
+      { titulo: 'Cierres mensuales por prepaga', tipo: 'info', url: dl('17eNbjsK-n8UH_F4J-WcYAN2Cp9qjDi_q') },
+      { titulo: 'Formas de presentación por prepaga', tipo: 'info', url: dl('1I-h3kdV8CGEmRHOFJnzo9F7eWqoCxE2L') },
+      { titulo: 'Tabla de cálculo IMC', tipo: 'info', url: dl('11mSAeqVTngIme_jn1p2WRUHcw77uP43G') },
+    ],
+  },
+  {
     id: 'swissmedical', nombre: 'Swiss Medical', color: '#E30613', cotiza: true, vigencia: 'Julio 2026',
     carpeta: folder('1EPRKSCY_0xGBW8PR6nLLxEZ_JcCUa7ay'),
     materiales: [
@@ -42,6 +51,7 @@ export const EMPRESAS: Empresa[] = [
       { titulo: 'Plan 440 · Descripción', tipo: 'plan', url: dl('1EuD6FgmdbPTJGxt3ODYLsFRhrh-hQvak') },
       { titulo: 'Plan 440 · Cartilla AMBA', tipo: 'cartilla', url: dl('1H_kzi29pVjLscRkEUQzMI5z2CeGT_28E') },
       { titulo: 'Plan 550 · Cartilla AMBA', tipo: 'cartilla', url: dl('1-PFV97rNRrxCIHK16u2FTbDTpHzbG7Vt') },
+      { titulo: 'Carta de carencias · Desregulados', tipo: 'info', url: dl('17xZkEelpolxFvKHosB8wYZMTe1nOoNuy') },
     ],
   },
   {
@@ -59,6 +69,11 @@ export const EMPRESAS: Empresa[] = [
       { titulo: 'Flyer Plan Oro', tipo: 'folleto', url: dl('1iioVxlmR7IWBvYzeMH7GIetY1uxeCERe') },
       { titulo: 'Flyer Plan Platinum', tipo: 'folleto', url: dl('1CSGZvTwDYbgO2G3acKay-cTIPJlbexbK') },
       { titulo: 'Copagos · Vigencia Abril 2026', tipo: 'info', url: dl('17rwg3uW02_KvwKBQGZQhqm3OUsIHkwbc') },
+      { titulo: 'Check List de alta (docs requeridos)', tipo: 'info', url: dl('1gI8hz9d7qOULvIwiFy1iySg_Jrc0sD1q') },
+      { titulo: 'Preguntas frecuentes (edades, IMC, OS a desregular)', tipo: 'info', url: dl('1K5OgfACkShv_G6vxadWAXYI2-34OvfsP') },
+      { titulo: 'Guía para completar la solicitud', tipo: 'info', url: dl('1c1GJHhpJZekJU2qNN1TneNEkVx1VFSwV') },
+      { titulo: 'Solicitud de ingreso (editable)', tipo: 'info', url: dl('1hkNQt5HAbEYWCiD2IA6FbykjVBg2bGwQ') },
+      { titulo: 'Zonas habilitadas y suspendidas', tipo: 'info', url: dl('1o2MDjZ0LL32xmvD7QDW3ChUHre8C6T4U') },
     ],
   },
   {
@@ -68,6 +83,9 @@ export const EMPRESAS: Empresa[] = [
       { titulo: 'Flyer Plan 2000', tipo: 'folleto', url: dl('1mmPupkYJHF5_hvGAJYnFbDech0jiScEE') },
       { titulo: 'Alcance de cobertura Plan 2000', tipo: 'info', url: dl('10fa5A8JG_I-ksojwBo2_yXXFQw5EgpxN') },
       { titulo: 'Cartilla Plan 2000 (por zona)', tipo: 'cartilla', url: folder('1bL9fIdx20FK_e8CT0se_J6fuOws2JgVm') },
+      { titulo: 'Presentación de ventas (cómo enviar el alta)', tipo: 'info', url: dl('11QrXdQQQnwNwIu4yHtcU71cGiXE7kext') },
+      { titulo: 'Preficha y DDJJ', tipo: 'info', url: dl('1iotamFYssnkEYXndqL9kHdjELIyqnnOQ') },
+      { titulo: 'Reglamento', tipo: 'info', url: dl('1pCBMF9j_hDdWCruq5bv4BYtFjBV8xd0T') },
     ],
   },
   {
@@ -78,6 +96,7 @@ export const EMPRESAS: Empresa[] = [
       { titulo: 'Plan 400 · Descripción', tipo: 'plan', url: dl('1_kmDd1_7ew-PJz5YP1YCT4Yd8ksBSvNJ') },
       { titulo: 'Promociones vigentes', tipo: 'info', url: dl('1kkpSIuXFd-ye2uhdv2luXscidh-8nKX-') },
       { titulo: 'Nómina Desregulados AMBA Ago-26', tipo: 'lista', url: dl('1B_hKVHihK2BNYiONb8c43uydKlSI5vQC') },
+      { titulo: 'Obras sociales NO permitidas', tipo: 'info', url: dl('1j55GZR-AS9sikcmBwgu6lNYcDepTmi1H') },
     ],
   },
   {
@@ -115,6 +134,7 @@ export const EMPRESAS: Empresa[] = [
       { titulo: 'Cartilla · Zona Norte', tipo: 'cartilla', url: dl('1y_3g2HRBKxDwnOhjwVuvYgXy8V6-ryj7') },
       { titulo: 'Cartilla · Zona Oeste', tipo: 'cartilla', url: dl('1glIPha7j6IBfaT_RiotP0Gz9jfus4EDj') },
       { titulo: 'Cartilla · Zona Sur', tipo: 'cartilla', url: dl('1Y5qHifutEzzAIBHKVJK81bPAbqY1j3OM') },
+      { titulo: 'Instructivo para completar la solicitud', tipo: 'info', url: dl('13jHOXc-i41YjV0M0_iZOYi_wdKluKG6L') },
     ],
   },
   {
